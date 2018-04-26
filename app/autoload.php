@@ -1,11 +1,24 @@
 <?php
-function autoload($class_name)
+/**
+ * Class Autoloader
+ * @package Tutoriel
+ */
+class Autoloader
 {
-	$file = __DIR__.'/'.$class_name.'.php';
-	if(file_exists($file))
-	{
-		require $file;
-	}
-}
+    /**
+     * Enregistre notre autoloader
+     */
+    public static function register()
+    {
+		spl_autoload_register(array(__CLASS__, 'autoload'));
+    }
 
-spl_autoload_register('autoload');
+    /**
+     * Inclue le fichier correspondant à notre classe
+     * @param $class string Le nom de la classe à charger
+     */
+    public static function autoload($class)
+    {
+            require $class . '.php';
+    }  
+} 
