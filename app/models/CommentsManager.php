@@ -1,65 +1,61 @@
 <?php
-abstract class CommentsManager
+require_once 'app/models/Comments.php';
+require_once 'app/models/Model.php';
+
+class CommentsManager extends Model
 {
-	/**
-	 * @access protected
-	 * @param Post $post 
-	 * @return void
-	 */
+    /**
+     * 
+     * @var \PDO
+     * @access protected
+     */
+    protected $_db;
 
-	abstract protected function add(Comments $post);
-
-	/**
-	 * @access protected
-	 * @param Post $post 
-	 * @return void
-	 */
-	abstract protected function update(Comments $post);
-
-	/**
-	 * @access public
-	 * @param int $id 
-	 * @return void
-	 */
-	abstract public function delete($id);
-
-	/**
-	 * @access public
-	 * @return int
-	 */
-	abstract public function count();
-
-	/**
-	 * @access public
-	 * @return post
-	 */
-	abstract public function getUnique($id);
-	
-	/**
-   * Méthode permettant d'enregistrer une news.
-   * @param $news News la news à enregistrer
-   * @see self::add()
-   * @see self::update()
-   * @return void
-   */
-  public function save(Comments $posts)
-  {
-    if ($posts->isValable())
+    /**
+     * @param PDO $_db
+     */
+    public function __construct(PDO $_db)
     {
-      $posts->isNew() ? $this->add($posts) : $this->update($posts);
+        $this->_db = $_db;
     }
-    else
+
+    /**
+     * @return mixed
+     */
+    public function getListComments($ref)
     {
-      throw new RuntimeException('La news doit être valide pour être enregistrée');
+        $sql = 'SELECT DISTINCT comments.post_id, comments.author, comments.content, comments.addDate, comments.updateDate FROM comments JOIN posts WHERE comments.post_id = ' . $ref . ' ORDER BY addDate DESC';
+
+        $request = $this->_db->query($sql);
+        $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Comments');
+        $listComments = $request->fetchAll();
+
+        //Implémentation des dates d'ajout et de modification en temps qu'instances de DateTime.
+        foreach ($listComments as $comments)
+        {
+            $comments->setAddDate(new \DateTime($comments->addDate()));
+            $comments->setUpdateDate(new \DateTime($comments->updateDate()));
+        }
+
+        $request->closeCursor();
+
+        return $listComments;
     }
-  }
 
-	/**
-	 * @access public
-	 * @param int $debut 
-	 * @param int $limite 
-	 * @return array
-	 */
-	abstract public function getList($debut = -1, $limite = -1);
+    /**
+     * @see CommentsManager::add()
+     * @param Comments $comments
+     */
+    protected function add(Comments $comments)
+    {
+        $request = $this->_db->prepare('INSERT INTO comments(author, title, content, addDate, updateDate) VALUES(/*:author*/?, /*:title*/?, /*:content*/?, NOW(), NOW())');
 
+        $request = ([
+            $comments->title(),
+            $comments->author(),
+            $comments->content()
+        ]);
+
+        $request->execute();
+    }
 }

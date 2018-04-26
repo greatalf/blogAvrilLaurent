@@ -1,65 +1,148 @@
 <?php
-abstract class PostsManager
+require_once 'app/models/Posts.php';
+require_once 'app/models/Model.php';
+
+class PostsManager  extends Model
 {
-	/**
+/**
+	 * 
+	 * @var \PDO
 	 * @access protected
-	 * @param Post $post 
-	 * @return void
 	 */
+	protected $_db;
 
-	abstract protected function add(Posts $post);
+    /**
+     * @param PDO $_db
+     */
+	public function __construct(PDO $_db)
+	{
+		$this->_db = $_db;
+	}
 
-	/**
-	 * @access protected
-	 * @param Post $post 
-	 * @return void
-	 */
-	abstract protected function update(Posts $post);
+    /**
+     * @see PostsManager::add()
+     * @param Posts $posts
+     */
+	protected function add(Posts $posts)
+	{
+		$request = $this->_db->prepare('INSERT INTO posts(author, title, content, addDate, updateDate) VALUES(/*:author*/?, /*:title*/?, /*:content*/?, NOW(), NOW())');
 
-	/**
-	 * @access public
-	 * @param int $id 
-	 * @return void
-	 */
-	abstract public function delete($id);
+		$request = ([
+			$posts->title(),
+			$posts->author(),
+			$posts->content()
+		]);
 
-	/**
-	 * @access public
-	 * @return int
-	 */
-	abstract public function count();
+		$request->execute();
+	}
 
-	/**
-	 * @access public
-	 * @return post
-	 */
-	abstract public function getUnique($id);
-	
-	/**
-   * Méthode permettant d'enregistrer une news.
-   * @param $news News la news à enregistrer
-   * @see self::add()
-   * @see self::update()
-   * @return void
-   */
-  public function save(Posts $posts)
-  {
-    if ($posts->isValable())
-    {
-      $posts->isNew() ? $this->add($posts) : $this->update($posts);
-    }
-    else
-    {
-      throw new RuntimeException('La news doit être valide pour être enregistrée');
-    }
-  }
 
-	/**
-	 * @access public
-	 * @param int $debut 
-	 * @param int $limite 
-	 * @return array
-	 */
-	abstract public function getList($debut = -1, $limite = -1);
+    /**
+     * @see PostsManager::delete()
+     * @param $id
+     */
+	public function delete($id)
+	{
+		$this->_db->exec('DELETE FROM posts WHERE id = '.(int) $id);
+	}
 
+    /**
+     * @see PostsManager::getList()
+     * @param int $debut
+     * @param int $limite
+     * @return array
+     */
+	public function getList($debut = -1, $limite = -1)
+	{
+		$sql = 'SELECT id, author, title, content, addDate, updateDate FROM posts ORDER BY id DESC';
+
+		if($debut != -1 || $limite != -1)
+		{
+			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+		}
+
+		$request = $this->_db->query($sql);
+		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
+		$listPosts = $request->fetchAll();
+
+		//Implémentation des dates d'ajout et de modification en temps qu'instances de DateTime.
+		foreach ($listPosts as $posts)
+		{
+		    $posts->setAddDate(new \DateTime($posts->addDate()));
+		    $posts->setUpdateDate(new \DateTime($posts->updateDate()));
+	    }
+	    
+	    $request->closeCursor();
+
+	    return $listPosts;
+	}
+
+    /**
+     * @see PostsManager::getUnique()
+     * @param $id
+     * @return mixed
+     */
+	public function getUnique($id)
+	{
+		$request = $this->_db->prepare('SELECT id, author, title, content, addDate, updateDate FROM posts WHERE id = :id');
+		$request->bindValue(':id', $id);
+		$request->execute();
+
+		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
+
+		$posts = $request->fetch();
+		//Verify the post existence
+		if($posts != false)
+		{
+			$posts->setUpdateDate(new \DateTime($posts->updateDate()));
+			$posts->setAddDate(new \DateTime($posts->addDate()));		
+			return $posts;
+		}
+		else
+		{
+			Session::setFlash('L\'article demandé est inexistant !');
+			header('Location:articles');
+		}
+
+	}
+
+    /**
+     * @see PostsManager::update()
+     * @param Posts $posts
+     */
+	protected function update(Posts $posts)
+	{
+		$request = $this->_db->prepare('UPDATE posts SET author = :author, title = :title, content = :content, updateDate = NOW() WHERE id = :id');
+
+		$request->bindValue(':author', $posts->author());
+		$request->bindValue(':title', $posts->title());
+		$request->bindValue(':content', $posts->content());
+		$request->bindValue(':id', $posts->id(), \PDO::PARAM_INT);
+
+		$request->execute();
+	}
+
+    /**
+     * Méthode permettant d'enregistrer une news.
+     * @param Posts $posts
+     * @return void
+     * @see self::add()
+     * @see self::update()
+     */
+	public function save(Posts $posts)
+	{
+	  if ($posts->isValable())
+	  {
+	    $posts->isNew() ? $this->add($posts) : $this->update($posts);
+	  }
+	  else
+	  {
+	    throw new RuntimeException('La news doit être valide pour être enregistrée');
+	  }
+	}
+
+	public function count()
+	{
+		return $this->_db->query('SELECT count(*) FROM posts')->fetchColumn();
+	}
 }
