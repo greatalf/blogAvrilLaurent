@@ -1,56 +1,51 @@
 <?php
-$this->_t = 'Admin';
+$this->_t = 'Espace perso';
 ?>
-<table>
-  <tr>
-    <th>Auteur</th>
-    <th>Titre</th>
-    <th>Date d'ajout</th>
-    <th>Dernière modification</th>
-    <th>Action</th>
-  </tr>
-<?php
-foreach ($manager as $posts):
-?>
-	<tr>
-	 <td> <?= $posts->author() ?> </td>
-	 <td> <?= $posts->title() ?> </td>
-	 <td> <?= $posts->addDate()->format('d/m/Y à H\hi') ?> </td>
-	 <td> <?= ($posts->addDate() == $posts->updateDate() ? '-' : $posts->updateDate()->format('d/m/Y à H\hi')) ?> </td>
-     <td><a href="?modifier='<?= $posts->id() ?> '">Modifier</a> | <a href="?supprimer='<?= $posts->id() ?> '">Supprimer</a></td>
-    </tr>
-    <br>
 
-<?php endforeach; ?>
-</table>
+<div>
+	<table>
+		<tr>
+		    <th>Nom</th>
+		    <th>Prénom</th>
+		    <th>Email</th>
+		    <th>Pseudo</th>
+		    <th>Niveau</th>
+	  	</tr>
+		<tr>
+			<td> <?= $userInfos->lastname() ?> </td>
+		 	<td> <?= $userInfos->firstname() ?> </td>
+			<td> <?= $userInfos->email() ?> </td>
+			<td> <?= $userInfos->username() ?> </td>
+		   	<td> <?= $userInfos->rank() ?> </td>
+	   	</tr>
+	</table>
 
+<br><br><br>
+<h3>Articles : </h3>
+	<a href="#"><button class="btn btn-primary">Ajouter</button></a>
+	<?php if(isset($manager)) : ?>		
+<div>
+	<table>
+	  <tr>
+	    <th>Auteur</th>
+	    <th>Titre</th>
+	    <th>Date d'ajout</th>
+	    <th>Dernière modification</th>
+	    <th>Action</th>
+	  </tr>
+	<?php
+		foreach ($manager as $posts):
+		?>
+			<tr>
+			 <td> <?= $posts->author() ?> </td>
+			 <td> <?= $posts->title() ?> </td>
+			 <td> <?= $posts->addDate()->format('d/m/Y à H\hi') ?> </td>
+			 <td> <?= ($posts->addDate() == $posts->updateDate() ? '-' : $posts->updateDate()->format('d/m/Y à H\hi')) ?> </td>
+		     <td><a href="?update=<?= $posts->id() ?> "><button class="btn btn-info btn-sm">Modifier</button></a> | <a href="?delete=<?= $posts->id() ?> "><button class="btn btn-warning btn-sm">Supprimer</button></a></td>
+		    </tr>
+		    <br>
 
-<style>
-table, td, th
-{
-	color: white;
-	border: 1px solid black;
-}
-
-a
-{
-	color: white;
-}
-
-table, th
-{
-	margin:auto;
-	text-align: center;
-	border-collapse: collapse;
-}
-
-table, th
-{
-	border: 3px solid black;
-}
-
-td
-{
-  padding: 3px;
-}
-</style>
+		<?php endforeach; ?>
+	</table>
+</div>
+	<?php endif; ?>

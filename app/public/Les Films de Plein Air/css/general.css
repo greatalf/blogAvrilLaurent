@@ -1,0 +1,191 @@
+body {
+  padding-top: 54px;
+  background-color: #000000;
+}
+#search_bar{
+  width: 165px;
+  z-index: -10;
+}
+@media (min-width: 992px) {
+  body {
+    padding-top: 56px;
+  }
+}
+.btn{
+  background-color: #803300;
+  border: #FFD700;
+  color:#FFFFFF;
+}
+.btn:hover{
+  background-color: #000000;
+}
+.btn:active{
+  background-color: #7e7e7e !important;
+}
+ 
+#logo{
+    width:100px;
+    position:relative;
+    top:20px;
+    left:50px;
+  }
+
+@media (max-width: 991px) {
+  #logo{
+    left:235px;
+    }
+  }
+@media (max-width: 768px) {
+  #logo{
+    left:235px;
+    }
+  }
+@media (max-width: 767px) {
+  .display-3{
+      font-size: 3rem;
+    }
+  #logo{
+    top:0px;
+    left:0px;
+    }
+  }
+@media (max-width: 384px) {
+  #logo{
+    width: 50px;
+    top:0px;
+    left:0px;
+    }
+  #LighterCopyright{
+    font-size: 14px;
+  }
+}
+@media (max-width: 333px) {
+  #logo{
+    display: none;
+    }
+  #LighterTitle{
+    font-size: 34px
+  }
+  #LighterCopyright{
+    font-size: 12px;
+  }
+}
+
+#fond{
+    position:fixed;
+    opacity: 0.5;
+    width:100%; 
+    height:100%; 
+    z-index:-1;
+  }
+.share{
+  color:#FFFFFF;
+  text-align: center;
+  font-size: 30px !important;
+}
+.share:hover{
+  color:#FFD700;
+}
+footer > div > p{
+  font-weight: normal;
+}
+.mentions-legales{
+    text-decoration: none;
+    color: #FFD700;
+  }
+.mentions-legales:hover{
+  color:#7e7e7e;
+  }
+
+  /*
+  ***** PAGE ACCUEIL *****
+  */
+#h1, #h3, #p{
+  color: #000000;
+  font-weight: lighter;
+  text-shadow: 0px 0px 0px;
+}
+.jumbotron{
+  background-color: #FFD700;
+}
+
+.plus{
+    display:none;
+  }
+u{
+    color:#000000;
+  }
+ 
+  /*
+  ***** PAGE RESERVATION *****
+  */
+#instruction{ 
+  text-shadow: 0px 0px 5px #000000;
+  font-weight: bold;
+  text-align: center;
+  color:#FFFFFF;
+  border: solid 2px #FFD700;
+}
+
+figure{
+  position: relative;
+}
+figcaption{
+  display: none;
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
+  background-color: #000000;
+  opacity: 0.7;
+  text-align: center;
+  color: #FFD700;
+  text-shadow: 0px 0px 5px #000000;
+}
+h1, h2, h3, p{
+    text-shadow: 0px 0px 5px #000000;
+    color:#FFFFFF;
+  }
+p{
+    font-weight: bold;
+  }
+hr{
+    background-color: #000000;
+  }
+.toggle-handle{
+    background-color: #FFD700;
+  }
+.toggle-off{
+    background-color: #7e7e7e;
+  }
+form{
+    width: 70%;
+    color:#FFFFFF;
+    text-shadow: 0px 0px 5px #000000;
+    font-weight: bold;
+  }
+#select{
+    width:65px;
+  }
+#NbTotalParticipants{
+  color: #FFFFFF;
+}
+#actionUserConnected{
+    opacity: 0;
+  }
+#actionUserConnected:active{
+    opacity: 1;
+  }
+#actionNoSelect{
+    opacity: 0;
+  }
+#actionNoSelect:active{
+    opacity: 1;
+  }
+.resaValide{
+  display: none;  
+  border:solid 3px #00FF00;
+}
+.resaInvalide{  
+  display: none;
+  border:solid 3px #FF0000;
+}

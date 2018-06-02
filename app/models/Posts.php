@@ -1,5 +1,5 @@
 <?php
-class Posts 
+class Posts
 {
 	/**
 	 * 
@@ -13,7 +13,7 @@ class Posts
 	 * @var int
 	 * @access protected
 	 */
-	protected  $id;
+	protected $id;
 
 	/**
 	 * 
@@ -188,7 +188,7 @@ class Posts
 	 * @return void
 	 */
 
-	public function setAddDate(DateTime $addDate) 
+	public function setAddDate(\DateTime $addDate) 
 	{
 		$this->addDate = $addDate;
 	}
@@ -199,7 +199,7 @@ class Posts
 	 * @return void
 	 */
 
-	public function setUpdateDate(DateTime $updateDate) 
+	public function setUpdateDate(\DateTime $updateDate) 
 	{
 		$this->updateDate = $updateDate;
 	}
@@ -225,7 +225,7 @@ class Posts
 
 	public function id() 
 	{
-		return $this->id;
+		return (int)$this->id;
 	}
 
 	/**

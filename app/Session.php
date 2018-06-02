@@ -1,4 +1,8 @@
 <?php
+if(session_status() == PHP_SESSION_NONE)
+{
+	session_start();
+}
 class Session
 {
 	public static function setFlash($message, $type = 'danger')
@@ -20,8 +24,21 @@ class Session
 				<?= $_SESSION['flash']['message'] ?>
 			</div>
 		<?php
+		// D::V($_SESSION['flash']);
 		}
 		unset($_SESSION['flash']);
 	}
+
+	public static function cookieFlash($value, $type = 'danger')
+	{
+		if(isset($_COOKIE["$value"]))
+		{
+		?>
+			<div class="alert alert-<?= $type ?>">
+				<a class="close">x</a>
+				<?= $_COOKIE["$value"] ?>
+			</div>
+		<?php
+		}
+	}
 }
-?>

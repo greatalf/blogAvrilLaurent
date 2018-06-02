@@ -9,16 +9,29 @@ class View
 		$this->_file = 'app/views/view' . ucfirst($action) . '.php';
 	}
 
+	public function getFile()
+	{
+		return $this->_file;
+	}
+
+	public function __toString()
+	{
+		return $this->getFile();
+	}
+
 	/**
-	*Permet de générer et d'afficher la vue $view
-	* @param $data donnée qu'on passe en param pour les récupérer dans la vue
-	*
-	*/
+     *Permet de générer et d'afficher la vue $view
+     * @param $data donnée qu'on passe en param pour les récupérer dans la vue
+     *
+     * @throws Exception
+     */
 	public function generate($data)
 	{
 		$content = $this->generateFile($this->_file, $data);
-		$comments = $this->generateFile($this->_file, $data);
-		$view = $this->generateFile('app/views/template.php', array('t' => $this->_t, 'content' => $content, 'comments' => $comments));
+		$view = $this->generateFile('app/views/template.php', array(
+			't' 		=> $this->_t,
+			'content' 	=> $content));
+
  		echo $view;
 	}
 
@@ -32,6 +45,8 @@ class View
 		if(file_exists($file) && $data != NULL)
 		{
 			extract($data);
+
+			//Je veux envoyer un paramètre avec le require $file
 			ob_start();
 			require $file;
 			return ob_get_clean();
@@ -48,4 +63,3 @@ class View
 		}
 	}
 }
-

@@ -5,12 +5,14 @@
  */
 class Autoloader
 {
+	// $DS = DIRECTORY_SEPARATOR;
+
     /**
      * Enregistre notre autoloader
      */
     public static function register()
     {
-		spl_autoload_register(array(__CLASS__, 'autoload'));
+        spl_autoload_register(array(__CLASS__, 'autoload'));
     }
 
     /**
@@ -19,6 +21,9 @@ class Autoloader
      */
     public static function autoload($class)
     {
+        // if (strpos($class, __NAMESPACE__ . '\\') === 0)
+        // {
             require $class . '.php';
-    }  
-} 
+        // }
+    }        
+}

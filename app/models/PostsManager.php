@@ -2,9 +2,9 @@
 require_once 'app/models/Posts.php';
 require_once 'app/models/Model.php';
 
-class PostsManager  extends Model
+class PostsManager extends Model
 {
-/**
+	/**
 	 * 
 	 * @var \PDO
 	 * @access protected
@@ -70,11 +70,44 @@ class PostsManager  extends Model
 		{
 		    $posts->setAddDate(new \DateTime($posts->addDate()));
 		    $posts->setUpdateDate(new \DateTime($posts->updateDate()));
-	    }
-	    
+	    }	    
 	    $request->closeCursor();
 
 	    return $listPosts;
+	}
+
+	public function getMyList($debut = -1, $limite = -1)
+	{ 
+		$sql = 'SELECT * FROM posts WHERE author = " . $_SESSION[\'author\'] . "';
+
+
+		if($debut != -1 || $limite != -1)
+		{
+			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+		}
+
+		$request = $this->_db->query($sql);
+
+		if($this->_db->query($sql)->rowCount() != 0)
+		{
+			if($request != false)
+			{
+				$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
+				$listPosts = $request->fetchAll();
+
+				// var_dump($listPosts);
+
+				//Implémentation des dates d'ajout et de modification en temps qu'instances de DateTime.
+				foreach ($listPosts as $posts)
+				{
+				    $posts->setAddDate(new \DateTime($posts->addDate()));
+				    $posts->setUpdateDate(new \DateTime($posts->updateDate()));
+			    }
+			    $request->closeCursor();
+
+			    return $listPosts;			
+			}
+		}
 	}
 
     /**
@@ -90,20 +123,19 @@ class PostsManager  extends Model
 
 		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
 
-		$posts = $request->fetch();
+		$post = $request->fetch();
 		//Verify the post existence
-		if($posts != false)
+		if($post != false)
 		{
-			$posts->setUpdateDate(new \DateTime($posts->updateDate()));
-			$posts->setAddDate(new \DateTime($posts->addDate()));		
-			return $posts;
+			$post->setUpdateDate(new \DateTime($post->updateDate()));
+			$post->setAddDate(new \DateTime($post->addDate()));		
+			return $post;
 		}
 		else
 		{
 			Session::setFlash('L\'article demandé est inexistant !');
 			header('Location:articles');
 		}
-
 	}
 
     /**

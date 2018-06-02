@@ -19,11 +19,7 @@ class ControllerAccueil
 	}
 
 	public function posts()
-	{
-		$db = DBFactory::getConnexionPDO();
-		require_once 'app/models/PostsManager.php';
-		$this->_postsManager = new PostsManager($db);
-		
+	{		
 		$this->_view = new View('Accueil');
 		$this->_view->generate(NULL);
 	}
