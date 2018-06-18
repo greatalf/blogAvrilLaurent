@@ -2,8 +2,7 @@
 class Router
 {
 	private $_controller,
-			$_view,
-			$_arg;
+			$_view;
 
     /**
      *

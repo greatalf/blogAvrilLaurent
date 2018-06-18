@@ -27,7 +27,6 @@ class ControllerConnexion
 		$this->_usersManager = new UsersManager($db);
 		$user = $this->_usersManager->checkUser();
 
-
 		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
 		{
 			if($user != false && !isset($_SESSION['auth']))
@@ -41,17 +40,14 @@ class ControllerConnexion
 				$_SESSION['password'] = $user->password();
 				$_SESSION['rank'] = $user->rank();
 
-				// die('ok 1');
-				header('Location:admin');
+				header('Location:articles');
 			}
 			elseif(isset($_SESSION['auth']))
 			{
-				// die('ok 2');
 				header('Location:admin');
 			}
 			else
 			{
-				// die('ok 3');
 				SESSION::setFlash('Le mot de passe et l\'adresse email ne correspondent pas!');
 				$this->_view = new View('Connexion');
 				$this->_view->generate(NULL);

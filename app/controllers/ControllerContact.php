@@ -64,11 +64,13 @@ class ControllerContact
 					{
 						SESSION::setFlash('Votre message a bien été posté.<br>', 'success');
 						header('Location:http://localhost/Blog_Avril_Laurent/#contact');
+						exit();
 					}
 					else
 					{
 						SESSION::setFlash('Votre message n\'a pas pu être posté.<br>Réessayez ultérieurement :/');
 						header('Location:http://localhost/Blog_Avril_Laurent/#contact');	
+						exit();
 					}
 
 				}
@@ -78,6 +80,7 @@ class ControllerContact
 		{
 			SESSION::setFlash('Remplissez tous les champs correctement !');				
 				header('Location:http://localhost/Blog_Avril_Laurent/#contact');
+				exit();
 		}
 	}	
 }	

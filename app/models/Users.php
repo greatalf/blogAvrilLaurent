@@ -6,56 +6,70 @@ class Users
 	 * @var array
 	 * @access protected
 	 */
-	protected  $errors = [];
+	protected $errors = [];
 
 	/**
 	 * 
 	 * @var int
 	 * @access protected
 	 */
-	protected  $id;
+	protected $id;
 
 	/**
 	 * 
 	 * @var string
 	 * @access protected
 	 */
-	protected  $lastname;
+	protected $lastname;
 
 	/**
 	 * 
 	 * @var string
 	 * @access protected
 	 */
-	protected  $firstname;
+	protected $firstname;
 
 	/**
 	 * 
 	 * @var string
 	 * @access protected
 	 */
-	protected  $email;
+	protected $email;
 
 	/**
 	 * 
 	 * @var datetime
 	 * @access protected
 	 */
-	protected  $username;
+	protected $username;
 
 	/**
 	 * 
 	 * @var string
 	 * @access protected
 	 */
-	protected  $password;
+	protected $password;
 
 	/**
 	 * 
 	 * @var int
 	 * @access protected
 	 */
-	protected  $rank;
+	protected $rank;
+
+	/**
+	 * 
+	 * @var timestamp
+	 * @access protected
+	 */
+	protected $confirmedAt;
+
+	/**
+	 * 
+	 * @var timestamp
+	 * @access protected
+	 */
+	protected $timeToDelete;
 
 	/**
 	*Constantes concernées par les erreurs pendant l'execution d'une méthode.
@@ -70,7 +84,6 @@ class Users
 	 * @param array $values 
 	 * @return void
 	 */
-
 	public function __construct($values = []) 
 	{
 		if(!empty($values))
@@ -84,7 +97,6 @@ class Users
 	 * @param array $data 
 	 * @return void
 	 */
-
 	public function hydrate($datas) 
 	{
 		foreach ($datas as $key => $value)
@@ -102,7 +114,6 @@ class Users
 	 * @access public
 	 * @return bool
 	 */
-
 	public function isValable() 
 	{
 		return !(empty($this->lastname) || empty($this->firstname) || empty($this->email)) || empty($this->username);
@@ -117,7 +128,6 @@ class Users
 	 * @param int $id 
 	 * @return void
 	 */
-
 	public function setId($id) 
 	{
 		{
@@ -131,7 +141,6 @@ class Users
 	 * @param string $lastname 
 	 * @return void
 	 */
-
 	public function setLastname($lastname) 
 	{
 		if(is_string($lastname) && strlen($lastname) <= 100 && !empty($lastname))
@@ -149,7 +158,6 @@ class Users
 	 * @param string $firstname 
 	 * @return void
 	 */
-
 	public function setFirstname($firstname) 
 	{
 		if(is_string($firstname) && strlen($firstname) <= 100 && !empty($firstname))
@@ -167,10 +175,9 @@ class Users
 	 * @param string $email 
 	 * @return void
 	 */
-
 	public function setEmail($email) 
 	{
-		if(is_string($email) && strlen($email) && !empty($email))
+		if(is_string($email) && strlen($email) >= 100 && !empty($email))
 		{
 			$this->email = $email;			
 		}
@@ -185,7 +192,6 @@ class Users
 	 * @param datetime $username 		
 	 * @return void
 	 */
-
 	public function setUsername($username) 
 	{
 		if(is_string($username) && strlen($username) <= 50 && !empty($username))
@@ -203,7 +209,6 @@ class Users
 	 * @param datetime $password 
 	 * @return void
 	 */
-
 	public function setPassword($password) 
 	{
 		$this->password = $password;
@@ -214,7 +219,6 @@ class Users
 	 * @param int $rank 
 	 * @return void
 	 */
-
 	public function setRank($rank) 
 	{
 		{
@@ -222,6 +226,27 @@ class Users
 		}
 	}
 
+	/**
+	 * @access public
+	 * @param int $confirmedAt 
+	 * @return void
+	 */
+	public function setConfirmedAt($confirmedAt) 
+	{
+		{
+			$this->confirmedAt = (int) $confirmedAt;
+		}
+	}
+
+	/**
+	 * @access public
+	 * @param datetime $passwordVerif 
+	 * @return void
+	 */
+	public function setTimeToDelete($timeToDelete) 
+	{
+		$this->timeToDelete = $timeToDelete;
+	}
 /////////////////////////////////////////////////////////////
 //////////////////////GETTERS////////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -296,5 +321,23 @@ class Users
 	public function rank() 
 	{
 		return $this->rank;
+	}
+
+	/**
+	 * @access public
+	 * @return int
+	 */
+	public function confirmedAt() 
+	{
+		return $this->confirmedAt;
+	}
+
+	/**
+	 * @access public
+	 * @return int
+	 */
+	public function timeToDelete() 
+	{
+		return $this->timeToDelete;
 	}
 }

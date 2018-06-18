@@ -4,9 +4,10 @@ require_once 'app/Session.php';
 
 class ControllerArticle
 {
-	private $_postsManager,
-			$_commentsManager,
+	private $_commentsManager,
 			$_usersManager,
+			$_comment,
+			$_post,
 			$_view;
 
 	public function __construct()
@@ -24,7 +25,7 @@ class ControllerArticle
 	public function post()
 	{
 		$db = DBFactory::getConnexionPDO();
-		$id = htmlspecialchars($_GET['id']);
+		$post_id = htmlspecialchars($_GET['post_id']);
 
 		require_once 'app/models/PostsManager.php';
 		require_once 'app/models/CommentsManager.php';
@@ -34,14 +35,16 @@ class ControllerArticle
 		$this->_commentsManager = new CommentsManager($db);
 		$this->_usersManager = new UsersManager($db);
 
-		if(isset($id))
+		$post = $this->_postsManager->getUnique($post_id);
+
+		if(isset($post_id) && $post)
 		{
-			$post = $this->_postsManager->getUnique($id);
-			$comments = $this->_commentsManager->getListComments($id);
+			$comments = $this->_commentsManager->getListComments($post_id);
 			$user = $this->_usersManager->checkUser();
 		}
 		else
 		{
+			SESSION::setFlash('L\'article demandé est inexistant!');
 			header('Location:articles');
 			exit();
 		}
@@ -49,25 +52,33 @@ class ControllerArticle
 		// Si utilisateur connecté
 		if(isset($_SESSION['auth']))
 		{
-			if(!empty($_POST['com_message']) && isset($_POST['com_submit']))
+			if(!empty($_POST['com_content']) && isset($_POST['com_submit']))
 			{
-				$this->_commentsManager->add($id);
+				$this->_comment = new Comments
+					([
+						'author' => $_SESSION['username'],
+						'content' => $_POST['com_content'],
+						'addDate' => new \DateTime()
+					]);
+
+				$this->_commentsManager->add($this->_comment);
+
 				SESSION::setFlash('Votre commentaire a bien été envoyé.', 'success');
-				header('Refresh:0, url=article&id=' . $id);
+				header('Refresh:0, url=article&post_id=' . $post_id);
 				exit();
 			}
-			elseif(empty($_POST['com_message']) && isset($_POST['com_submit']))
+			elseif(empty($_POST['com_content']) && isset($_POST['com_submit']))
 			{
 				SESSION::setFlash('Veuillez remplir le champs "Message" correctement.');
-				header('Location: article&id=' . $id);
+				header('Location: article&post_id=' . $post_id);
 				exit();
 			}
 		}
-		//if user connected
+		//if user diconnected
 		if(!isset($_SESSION['auth']) && isset($_POST['com_submit']))
 		{
 			//Si les champs sont complétés
-			if(!empty($_POST['connect_email']) && !empty($_POST['connect_pass']) && !empty($_POST['com_message']))
+			if(!empty($_POST['com_content']) && isset($_POST['com_submit']))
 			{
 				//Si l'user existe bien et qu'il n'est pas connecté
 				if($user != false)
@@ -82,26 +93,33 @@ class ControllerArticle
 					$_SESSION['password'] = $user->password();
 					$_SESSION['rank'] = $user->rank();
 
-					//Ajout du commentaire en BDD
-					$this->_commentsManager->add($id);
+					//Ajout du commentaire en BDD par hydratation
+					$this->_comment = new Comments
+					([
+						'author' => $user->username(),
+						'content' => $_POST['com_content'],
+						'addDate' => new \DateTime()
+					]);
+					
+					$this->_commentsManager->add($this->_comment);
 
 					//Affichage du message cookie flash
 					SESSION::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
 					
-					header('Refresh:0, url=article&id=' . $id);
+					header('Refresh:0, url=article&post_id=' . $post_id);
 					exit();
 				}
 				else
 				{
 					SESSION::setFlash('Le mot de passe et l\'adresse email ne correspondent pas!');
-					header('Refresh:0, url=article&id=' . $id);
+					header('Refresh:0, url=article&post_id=' . $post_id);
 					exit();
 				}
 			}
 			else
 			{
 				SESSION::setFlash('Veuillez remplir tous les champs correctement !');
-				header('Refresh:0, url=article&id=' . $id);
+				header('Refresh:0, url=article&post_id=' . $post_id);
 				exit();
 			}
 		}	
@@ -111,31 +129,36 @@ class ControllerArticle
 		{
 			if($_SESSION['rank'] == 2)
 			{
-				if(isset($_GET['delete']))
+				if(isset($_GET['comment_delete']))
 				{
-					$this->_commentsManager->delete((int) $_GET['delete']);
+					$this->_comment = new Comments
+						([
+							'id' => (int)$_GET['comment_delete']
+						]);	
+					$this->_commentsManager->delete($this->_comment);
 					//Affichage du message cookie flash
 					SESSION::setFlash('Le commentaire a bien été supprimé.', 'success');
 
-					header('Refresh:0, url=article&id=' . $id);
+					header('Refresh:0, url=article&post_id=' . $post_id);
 					exit();
 				}
 			}
 
 			if($_SESSION['rank'] > 0)
 			{
-				if(isset($_GET['update']))
+				if(isset($_GET['comment_update']))
 				{
-					$commentUpdate = $this->_commentsManager->getUniqueComment($_GET['update']);
-					// var_dump($commentUpdate);
-					// die();
-
+					$commentUpdate = $this->_commentsManager->getUniqueComment($_GET['comment_update']);
 					if($commentUpdate && isset($_POST['com_update']))
 					{
-						$this->_commentsManager->update($_GET['update']);
+						$this->_comment = new Comments
+						([
+							'id' => (int)$_GET['comment_update']
+						]);	
+						$this->_commentsManager->update($this->_comment);
 
 						SESSION::setFlash('Le commentaire a bien été mis jour.', 'success');
-						header('Refresh:0, url=article&id=' . $id);
+						header('Refresh:0, url=article&post_id=' . $post_id);
 						exit();
 					}
 					elseif(!$commentUpdate)

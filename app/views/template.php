@@ -111,9 +111,12 @@
             <div class="container">
                 <div class="row">
                     <div class="footer-col col-md-4">
+                        <?php if(isset($_SESSION['auth'])): ?>
+                            <h3><a href="http://localhost/Blog_Avril_Laurent/admin">>Mon espace perso<</a></h3>
+                        <?php endif; ?>
                         <h3>Localisation</h3>
-                        <p>79, rue de Clignancourt
-                            <br>Paris, 75018</p>
+                        <p>241, Boulevard Sénardière
+                            <br>Paris, France</p>
                     </div>
                     <div class="footer-col col-md-4">
                         <h3>Autour du web</h3>

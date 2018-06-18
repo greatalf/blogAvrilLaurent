@@ -2,7 +2,7 @@
 $this->_t = 'Connexion';
 
 SESSION::flash();
-SESSION::cookieFlash('denied');
+SESSION::cookieFlash('deco', 'success');
 ?>
 <form action="connexion" method="post" >
   <div class="form-group">
