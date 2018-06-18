@@ -1,8 +1,4 @@
-/*!
- * Start Bootstrap - Freelancer v3.3.7+1 (http://startbootstrap.com/template-overviews/freelancer)
- * Copyright 2013-2016 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
- */
+
 body {
   font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   overflow-x: hidden;
@@ -189,6 +185,7 @@ section.success {
   background: #18BC9C;
   color: white;
 }
+
 @media (max-width: 767px) {
   section {
     padding: 75px 0;
@@ -241,6 +238,10 @@ section.success {
   z-index: 2;
 }
 @media (min-width: 767px) {
+  .navig
+  {
+    margin: 0px;
+  }
   #portfolio .portfolio-item {
     margin: 0 0 30px;
   }

@@ -22,6 +22,7 @@ class ControllerArticles
 	{
 		$db = DBFactory::getConnexionPDO();
 		require_once 'app/models/PostsManager.php';
+		
 		$this->_postsManager = new PostsManager($db);
 		$posts = $this->_postsManager->getList(0,5);
 		$this->_view = new View('Articles');

@@ -4,40 +4,13 @@ class Model
     protected $_db;
 
     /**
-     *
+     * @param $length
+     * @return string
      */
-    protected function setDB()
+    protected function str_random($length)
     {
-        $this->_db = new PDO('mysql:host=localhost;dbname=my_blog;charset=utf8', 'root', '');
-		$this->_db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-    }
+        $alphabet = "azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN01234567849!$";
 
-    /**
-     * @return mixed
-     */
-    protected function getDB()
-    {
-        if($this->_db == NULL)
-        {
-            return $this->_db;
-        }
+        return substr(str_shuffle(str_repeat($alphabet, $length)), 0, $length);
     }
-
-    /**
-     * @param $table
-     * @param $obj
-     * @return array
-     */
-    protected function getAll($table, $obj)
-	{
-		$var = [];
-		$req = $this->_db->prepare('SELECT * FROM' .$table. 'ORDER BY id desc');
-		$req->execute();
-		while($data = $req->fetch(PDO::FETCH_ASSOC))
-		{
-			$var[] = new $obj($data);
-		}
-		return $var;
-		$req->closeCursor();
-	}
 }

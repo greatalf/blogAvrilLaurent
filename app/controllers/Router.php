@@ -2,7 +2,8 @@
 class Router
 {
 	private $_controller,
-			$_view;
+			$_view,
+			$_arg;
 
     /**
      *
@@ -23,7 +24,7 @@ class Router
 				if (file_exists($controllerFile))
 				{
                     require_once($controllerFile);
-					$this->_controller = new $controllerClass($url);
+					$this->_controller = new $controllerClass;
 				}
 				else
 				{

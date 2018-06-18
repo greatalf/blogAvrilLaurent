@@ -25,75 +25,82 @@
 
     <!-- CSS perso -->
     <link href="app/public/css/style.css"  rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
 </head>
 
 <body id="page-top" class="index">
 
-    <!-- Navigation -->
     <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
         <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-           <div class="navbar-header page-scroll">
+
+            <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href=".">Laurent-A.fr</a>
+                <a class="navbar-brand" href=".">laurentavril.fr</a>
             </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>
                     <li class="page-scroll">
-                        <a href="http://localhost/Blog_Avril_Laurent/articles">Articles</a>
+                        <a href="http://localhost/Blog_Avril_Laurent/#portfolio">Portfolio</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="http://localhost/Blog_Avril_Laurent/connection">Connection</a>
+                        <a href="http://localhost/Blog_Avril_Laurent/#about">A propos</a>
                     </li>
+                    <li class="page-scroll">
+                        <a href="http://localhost/Blog_Avril_Laurent/#contact">Contact</a>
+                    </li>                                        
+                    <li class="page-scroll">
+                        <a href="http://localhost/Blog_Avril_Laurent/articles">Articles</a>
+                    </li>
+                    <?php if(!isset($_SESSION['auth'])): ?>
+
+                    <li id="registerIconBar" class="page-scroll dropdown nav navbar-nav navbar-right">
+                        <button id="registerIcon" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul id="drop-menu" class="dropdown-menu">
+                            <li>
+                                <a href="http://localhost/Blog_Avril_Laurent/connexion">Se connecter</a>
+                            </li>
+                            <li>
+                                <a href="http://localhost/Blog_Avril_Laurent/register">S'inscrire</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                        <?php else: ?>
+                    <li class="dropdown nav navbar-nav navbar-right">
+                        <button id="registerIcon" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><?= strlen(($_SESSION['username'])) <= 12 ? substr(strtoupper($_SESSION['username']), 0, 12) : substr(strtoupper($_SESSION['username']), 0, 12) . '...' ?>
+                            <span class="caret"></span>
+                        </button>
+                        <ul id="drop-menu" class="dropdown-menu">
+                            <li>
+                                <a href="http://localhost/Blog_Avril_Laurent/admin">Mon espace</a>
+                            </li>
+                            <li>
+                                <a href="http://localhost/Blog_Avril_Laurent/deco">Se déconnecter</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </div>
-            <!-- /.navbar-collapse -->
         </div>
-        <!-- /.container-fluid -->
     </nav>
 
-    <!-- Header -->
-    <!-- <header>
+    <!-- Article Section -->
+    <section id="articles" class="success">
         <div class="container">
+            <h1 class="text-center"><?= $t ?></h1>
             <div class="row">
-                <div class="col-lg-12">
-                    <img class="img-responsive" src="app/public/Bootstrap/img/profile.png" alt="">
-                    <div class="intro-text">
-                        <span class="name">Laurent AVRIL</span>
-                        <hr class="star-light">
-                        <span class="skills">Developper web - A. Laurent, parce qu'il vous le rend...</span>
-                    </div>
+                <div class="col-lg-12 text-left">
+                   <?= $content ?>
                 </div>
-            </div>
-        </div>
-    </header> -->
-
-    <!-- About Section -->
-    <section class="success" id="articles">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <?= Session::Flash() ?>
-                    <h2><?= $t ?></h2>
-                    <hr class="star-light">
-            </div>
-            <div>
-               <?= $content ?>
             </div>
         </div>
     </section>
@@ -104,33 +111,30 @@
             <div class="container">
                 <div class="row">
                     <div class="footer-col col-md-4">
-                        <h3>Location</h3>
-                        <p>3481 Melrose Place
-                            <br>Beverly Hills, CA 90210</p>
+                        <h3>Localisation</h3>
+                        <p>79, rue de Clignancourt
+                            <br>Paris, 75018</p>
                     </div>
                     <div class="footer-col col-md-4">
-                        <h3>Around the Web</h3>
+                        <h3>Autour du web</h3>
                         <ul class="list-inline">
                             <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-facebook"></i></a>
+                                <a href="https://www.facebook.com/laurentfredric" class="btn-social btn-outline"><i class="fa fa-fw fa-facebook"></i></a>
                             </li>
                             <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-google-plus"></i></a>
+                                <a href="https://plus.google.com/113658895271733957152" class="btn-social btn-outline"><i class="fa fa-fw fa-google-plus"></i></a>
                             </li>
                             <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-twitter"></i></a>
+                                <a href="https://github.com/greatalf" class="btn-social btn-outline"><i class="fa fa-fw fa-github"></i></a>
                             </li>
                             <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-linkedin"></i></a>
-                            </li>
-                            <li>
-                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-dribbble"></i></a>
+                                <a href="https://www.linkedin.com/in/laurent-avril-dev-web-php" class="btn-social btn-outline"><i class="fa fa-fw fa-linkedin"></i></a>
                             </li>
                         </ul>
                     </div>
                     <div class="footer-col col-md-4">
-                        <h3>About Freelancer</h3>
-                        <p>Freelance is a free to use, open source Bootstrap theme created by <a href="http://startbootstrap.com">Start Bootstrap</a>.</p>
+                        <h3>Un petit devis</h3>
+                        <p>Contactez moi et je vous dresserai un devis sur mesure adapté à vos exigences et à vos besoins -><a href="http://localhost/Blog_Avril_Laurent/#contact">ici</a><-</p>
                     </div>
                 </div>
             </div>
@@ -139,7 +143,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        Copyright &copy; Your Website 2016
+                        Copyright &copy; laurentavril.fr 2018
                     </div>
                 </div>
             </div>
@@ -168,7 +172,7 @@
                         <div class="modal-body">
                             <h2>Project Title</h2>
                             <hr class="star-primary">
-                            <img src="app/public/Bootstrap/img/portfolio/cabin.png" class="img-responsive img-centered" alt="">
+                            <img src="app/public/Bootstrap/img/portfolio/chalets-et-caviar.png" class="img-responsive img-centered" alt="">
                             <p>Use this area of the page to describe your project. The icon above is part of a free icon set by <a href="https://sellfy.com/p/8Q9P/jV3VZ/">Flat Icons</a>. On their website, you can download their free set with 16 icons, or you can purchase the entire set with 146 icons for only $12!</p>
                             <ul class="list-inline item-details">
                                 <li>Client:
@@ -385,10 +389,6 @@
 
     <!-- Plugin JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-
-    <!-- Contact Form JavaScript -->
-    <script src="app/public/Bootstrap/js/jqBootstrapValidation.js"></script>
-    <script src="app/public/Bootstrap/js/contact_me.js"></script>
 
     <!-- Theme JavaScript -->
     <script src="app/public/Bootstrap/js/freelancer.min.js"></script>
