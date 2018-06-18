@@ -4,7 +4,8 @@ require_once 'app/views/View.php';
 
 class ControllerAdmin
 {
-	private $_view;
+	private $_view,
+			$_user;
 
 	public function __construct()
 	{ 	
@@ -26,23 +27,58 @@ class ControllerAdmin
 			require_once 'app/models/PostsManager.php';
 			require_once 'app/models/UsersManager.php';
 
+
 			$this->_usersManager = new UsersManager($db);
 			$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
-
-			// if($_SESSION['rank'] == 2 || $_SESSION['rank'] <= 1)
-			// {
-				//UPDATE BOUTTON
-			// 	$_SESSION['boutton_update'] = '<button type="submit" class="btn btn-info btn-sm">Modifier</button>';
-			// }
 
 			if($_SESSION['rank'] == 2)
 			{
 				$this->_postsManager = new PostsManager($db);
 				$manager = $this->_postsManager->getList(0,25);
-				$this->_view = new View('Admin');
-				$this->_view->generate(array('manager' => $manager, 'userInfos' => $userInfos));
+
+				$allUsers = $this->_usersManager->getUsersList();		
+
+				//Effacement article
+				if($_SESSION['rank'] == 2)
+				{
+					if(isset($_GET['post_delete']))
+					{
+						//HYDRATATION POUR DELETE
+						$this->_post = new Posts
+						([
+							'id' => $_GET['post_delete']
+						]);
+
+						$this->_postsManager->delete($this->_post);
+						//Affichage du message msg flash
+						SESSION::setFlash('L\'article a bien été supprimé.', 'success');
+
+						header('Refresh:0, url=admin');
+						exit();
+					}
+				}
+
+				//Effacement User
+				if(isset($_GET['user_delete']))
+					{
+						//HYDRATATION POUR DELETE
+						$this->_user = new Users
+						([
+							'id' => $_GET['user_delete']
+						]);
+						
+						$this->_usersManager->delete($this->_user);
+						//Affichage du message msg flash
+						SESSION::setFlash('L\'utilisateur a bien été bannit.', 'success');
+
+						header('Location:admin');
+						exit();
+					}
 			}
-			else
+
+
+			
+			if($_SESSION['rank'] == 1)
 			{
 				$this->_postsManager = new PostsManager($db);
 				$manager = $this->_postsManager->getMyList(0,10);
@@ -60,8 +96,15 @@ class ControllerAdmin
 		}
 		else
 		{
-			setcookie("denied", $denied = 'Vous n\'êtes pas autorisé à accéder à cette page', time()+(3));
+			SESSION::setFlash('Vous n\'êtes pas autorisé à accéder à cette page');
 			header('Location:connexion');
+			exit();
+		}
+
+		if(!headers_sent())
+		{
+			$this->_view = new View('Admin');
+			$this->_view->generate(array('manager' => $manager, 'userInfos' => $userInfos, 'allUsers' => $allUsers));
 		}
 	}
 }

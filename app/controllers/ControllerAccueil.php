@@ -3,8 +3,7 @@ require_once 'app/views/View.php';
 
 class ControllerAccueil
 {
-	private $_postsManager,
-			$_view;
+	private $_view;
 
 	public function __construct()
 	{ 	

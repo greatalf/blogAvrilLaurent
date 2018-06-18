@@ -5,7 +5,7 @@ $this->_t = 'Inscription';
 SESSION::flash();
 Session::cookieFlash('denied');
 ?>
-<form action="register" method="post" >
+<form action="" method="post" >
 	<div class="form-group">
    		<label for="lastname">Nom</label>
    		<input type="text" name="regist_lastname" value="<?= isset($_POST['regist_lastname']) ? $_POST['regist_lastname'] : '' ?>" class="form-control" id="lastname" placeholder="Votre nom" required="required">

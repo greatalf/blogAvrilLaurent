@@ -26,30 +26,52 @@ class ControllerConfirm
 		require_once 'app/models/UsersManager.php';
 		$this->_usersManager = new UsersManager($db);
 
-		$user = $this->_usersManager->confirmUser();
+		if(isset($_SESSION['auth']) && $_GET['user_id'] != $_SESSION['id'])
+		{
+			header('Location:articles');
+			exit();
+		}
 		
-			if($user != false && !isset($_SESSION['auth']))
-			{
-				$_SESSION['auth'] = 1;
-				$_SESSION['id'] = $user->id();
-				$_SESSION['lastname'] = $user->lastname();
-				$_SESSION['firstname'] = $user->firstname();
-				$_SESSION['email'] = $user->email();
-				$_SESSION['username'] = $user->username();
-				$_SESSION['password'] = $user->password();
-				$_SESSION['rank'] = 1;
+		if(isset($_GET['user_id']) && isset($_GET['confirmation_token']))
+		{					
+			$user = $this->_usersManager->confirmUser();
+			$token = htmlspecialchars($_GET['confirmation_token']);
 
-				header('Location:admin');
-			}
-			elseif(isset($_SESSION['auth']))
+			if($user)
 			{
-				header('Location:admin');
+				if($user->confirmation_token == $token)
+				{
+					$this->_usersManager->userIsConfirmed();
+
+					$_SESSION['auth'] = 1;
+					$_SESSION['id'] = $user->id();
+					$_SESSION['lastname'] = $user->lastname();
+					$_SESSION['firstname'] = $user->firstname();
+					$_SESSION['email'] = $user->email();
+					$_SESSION['username'] = $user->username();
+					$_SESSION['password'] = $user->password();
+					$_SESSION['rank'] = 1;
+
+					header('Location:articles');
+					exit();
+				}
+				if($user->confirmation_token == NULL)
+				{
+					SESSION::setFlash('Ce token est invalide ou obsolète');
+					header('Refresh:0, url=connexion');
+					exit();
+				}
 			}
 			else
 			{
-				SESSION::setFlash('Veuillez remplir les champs de connexion');
-				$this->_view = new View('Connexion');
-				$this->_view->generate(NULL);
+				header('Location:articles');
+				exit();
 			}
+		}
+		else
+		{
+			header('Location:articles');
+			exit();
+		}
 	}
 }

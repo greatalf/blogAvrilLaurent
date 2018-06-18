@@ -23,27 +23,50 @@ class PostsManager extends Model
      * @see PostsManager::add()
      * @param Posts $posts
      */
-	protected function add(Posts $posts)
+	public function add(Posts $posts)
 	{
-		$request = $this->_db->prepare('INSERT INTO posts(author, title, content, addDate, updateDate) VALUES(/*:author*/?, /*:title*/?, /*:content*/?, NOW(), NOW())');
+		$title = htmlspecialchars($_POST['post_title']);
+		$chapo = htmlspecialchars($_POST['post_chapo']);
+		$content = htmlspecialchars($_POST['post_content']);
 
-		$request = ([
-			$posts->title(),
-			$posts->author(),
-			$posts->content()
-		]);
+		$request = $this->_db->prepare('INSERT INTO posts(author, title, chapo, content, addDate, updateDate) VALUES(:author, :title, :chapo, :content, NOW(), NULL)');
+
+		$request->bindValue(':author', $posts->author());
+		$request->bindValue(':title', $title);
+		$request->bindValue(':chapo', $chapo);
+		$request->bindValue(':content', $content);
 
 		$request->execute();
 	}
 
+	/**
+     * @see PostsManager::update()
+     * @param Posts $posts
+     */
+	public function update(Posts $posts)
+	{
+		$author = htmlspecialchars($_POST['post_author']);
+		$title = htmlspecialchars($_POST['post_title']);
+		$chapo = htmlspecialchars($_POST['post_chapo']);
+		$content = htmlspecialchars($_POST['post_content']);
+
+		$request = $this->_db->prepare('UPDATE posts SET author = :author, title = :title, chapo = :chapo, content = :content, updateDate = NOW() WHERE id = :id');
+		$request->bindValue(':author', $author);
+		$request->bindValue(':title', $title);
+		$request->bindValue(':chapo', $chapo);
+		$request->bindValue(':content', $content);
+		$request->bindValue(':id', $_GET['post_update'], \PDO::PARAM_INT);
+
+		$request->execute();
+	}
 
     /**
      * @see PostsManager::delete()
      * @param $id
      */
-	public function delete($id)
+	public function delete(Posts $posts)
 	{
-		$this->_db->exec('DELETE FROM posts WHERE id = '.(int) $id);
+		$this->_db->exec('DELETE FROM posts WHERE id = '.(int) $posts->id());
 	}
 
     /**
@@ -54,7 +77,7 @@ class PostsManager extends Model
      */
 	public function getList($debut = -1, $limite = -1)
 	{
-		$sql = 'SELECT id, author, title, content, addDate, updateDate FROM posts ORDER BY id DESC';
+		$sql = 'SELECT id, author, title, chapo, content, addDate, updateDate FROM posts ORDER BY id DESC';
 
 		if($debut != -1 || $limite != -1)
 		{
@@ -67,13 +90,20 @@ class PostsManager extends Model
 
 		//Implémentation des dates d'ajout et de modification en temps qu'instances de DateTime.
 		foreach ($listPosts as $posts)
-		{
-		    $posts->setAddDate(new \DateTime($posts->addDate()));
-		    $posts->setUpdateDate(new \DateTime($posts->updateDate()));
-	    }	    
-	    $request->closeCursor();
+        {
+            if($posts->updateDate() != NULL)
+            {
+                $posts->setAddDate(new \DateTime($posts->addDate()));
+                $posts->setUpdateDate(new \DateTime($posts->updateDate()));                
+            }
+            else
+            {
+                $posts->setAddDate(new \DateTime($posts->addDate()));
+            }
+        }
 
-	    return $listPosts;
+        $request->closeCursor();
+        return $listPosts;
 	}
 
 	public function getMyList($debut = -1, $limite = -1)
@@ -115,10 +145,10 @@ class PostsManager extends Model
      * @param $id
      * @return mixed
      */
-	public function getUnique($id)
+	public function getUnique($post_id)
 	{
-		$request = $this->_db->prepare('SELECT id, author, title, content, addDate, updateDate FROM posts WHERE id = :id');
-		$request->bindValue(':id', $id);
+		$request = $this->_db->prepare('SELECT id, author, title, chapo, content, addDate, updateDate FROM posts WHERE id = :id');
+		$request->bindValue(':id', $post_id);
 		$request->execute();
 
 		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
@@ -131,27 +161,6 @@ class PostsManager extends Model
 			$post->setAddDate(new \DateTime($post->addDate()));		
 			return $post;
 		}
-		else
-		{
-			Session::setFlash('L\'article demandé est inexistant !');
-			header('Location:articles');
-		}
-	}
-
-    /**
-     * @see PostsManager::update()
-     * @param Posts $posts
-     */
-	protected function update(Posts $posts)
-	{
-		$request = $this->_db->prepare('UPDATE posts SET author = :author, title = :title, content = :content, updateDate = NOW() WHERE id = :id');
-
-		$request->bindValue(':author', $posts->author());
-		$request->bindValue(':title', $posts->title());
-		$request->bindValue(':content', $posts->content());
-		$request->bindValue(':id', $posts->id(), \PDO::PARAM_INT);
-
-		$request->execute();
 	}
 
     /**
@@ -169,7 +178,7 @@ class PostsManager extends Model
 	  }
 	  else
 	  {
-	    throw new RuntimeException('La news doit être valide pour être enregistrée');
+	    throw new RuntimeException('L\'article doit être valide pour être enregistrée');
 	  }
 	}
 

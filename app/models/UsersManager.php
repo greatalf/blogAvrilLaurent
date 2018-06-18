@@ -22,14 +22,14 @@ class UsersManager extends Model
      * @see UsersManager::add()
      * @param Users $users
      */
-	public function add()
+	public function add(Users $users)
 	{
 		if(isset($_POST['regist_lastname']) &&
 			isset($_POST['regist_firstname']) &&
 			isset($_POST['regist_email']) &&
 			isset($_POST['regist_username']) &&
 			isset($_POST['regist_password']) &&
-			isset($_POST['regist_rank']))
+			isset($_POST['regist_password_confirm']))
 		{
 			// session_start();
 			$request = $this->_db->prepare('INSERT INTO users (lastname, firstname, email, username, password, rank, confirmation_token) VALUES(?, ?, ?, ?, ?, ?, ?)');
@@ -44,10 +44,9 @@ class UsersManager extends Model
 				$_POST['regist_email'],
 				$_POST['regist_username'],
 				$password,
-				$_POST['regist_rank'],
+				1,
 				$token
 			]);
-
 
 			$newUser = $this->_db->lastInsertId();
 			return $newUser;
@@ -58,9 +57,9 @@ class UsersManager extends Model
      * @see UsersManager::delete()
      * @param $id
      */
-	public function delete($id)
+	public function delete(Users $users)
 	{
-		$this->_db->exec('DELETE FROM users WHERE id = '.(int) $id);
+		$this->_db->exec('DELETE FROM users WHERE id = '.(int) $users->id());
 	}
 
     /**
@@ -117,12 +116,7 @@ class UsersManager extends Model
 	  {
 	    throw new RuntimeException('La news doit être valide pour être enregistrée');
 	  }
-	}
-
-	public function count()
-	{
-		return $this->_db->query('SELECT count(*) FROM users')->fetchColumn();
-	}
+	}	
 
 	public function getUserInfos($id)
 	{
@@ -137,12 +131,15 @@ class UsersManager extends Model
 
 	public function checkUser()
 	{
+
 		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
 		{
+			$connect_email = htmlspecialchars($_POST['connect_email']);
+			$connect_pass = htmlspecialchars($_POST['connect_pass']);
 			// $password = password_hash($_POST['connect_pass'], PASSWORD_BCRYPT);
 			// $pass_verif = password_verify($_POST['connect_pass'], );
 			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
-			$request->execute(array(htmlspecialchars($_POST['connect_email']), (htmlspecialchars(md5($_POST['connect_pass'])))));
+			$request->execute(array($connect_email, md5($connect_pass)));
 
 			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 			$user = $request->fetch();
@@ -153,33 +150,48 @@ class UsersManager extends Model
 
 	public function confirmUser()
 	{
-		if(isset($_GET['id']) && isset($_GET['confirmation_token']))
-		{
-			$user_id = $_GET['id'];
-			$token = $_GET['confirmation_token'];
+		$user_id = htmlspecialchars($_GET['user_id']);
+		$token = htmlspecialchars($_GET['confirmation_token']);
 
-			$request = $this->_db->prepare('SELECT * FROM users WHERE id = ?');
-			$request->execute(array($user_id));
-			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
-			$user = $request->fetch();
+		$request = $this->_db->prepare('SELECT * FROM users WHERE id = ?');
+		$request->execute([$user_id]);
+		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');			
+		$user = $request->fetch();
 
-			if($user && $user->confirmation_token == $token)
-			{
-				$request = $this->_db->prepare('
-					UPDATE users 
-					SET confirmation_token = NULL, 
-						confirmed_at = NOW() 
-					WHERE id = ?')
-				->execute([$user_id]);
-				return $user;
-			}
-			elseif($user->confirmation_token == NULL)
-			{
-				SESSION::setFlash('Ce lien n\'est plus valide!');
-				// $this->_view = new View('Connexion');
-				// $this->_view->generate(NULL);
-				header('Location: connexion');
-			}
+		return $user;
+	}
+
+	public function userIsConfirmed()
+	{
+		$user_id = htmlspecialchars($_GET['user_id']);
+
+		$request = $this->_db->prepare('UPDATE users SET confirmation_token = NULL, confirmedAt = NOW() WHERE id = ?')->execute([$user_id]);
+	}
+
+	public function count()
+	{
+		return $this->_db->query('SELECT count(*) FROM users')->fetchColumn();
+	}
+
+	public function getUsersList()
+	{
+		$request = $this->_db->query('SELECT * FROM users');
+		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+
+		$allUsers = $request->fetchAll();
+		$request->closeCursor();
+
+		return $allUsers;
+	}
+
+	public function deleteUsersNoConfirmed($timeMinutes)
+	{
+		$timeToErase = time() - (60 * $timeMinutes);
+
+		$count = $this->_db->query('SELECT count(*) FROM users WHERE timeToDelete != NULL')->fetchColumn();
+		if($count != 0)
+		{			
+			$this->_db->exec('DELETE FROM users WHERE timeToDelete < ' . $timeToErase);
 		}
 	}
 }

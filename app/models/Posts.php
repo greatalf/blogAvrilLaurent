@@ -29,6 +29,13 @@ class Posts
 	 */
 	protected  $title;
 
+		/**
+	 * 
+	 * @var string
+	 * @access protected
+	 */
+	protected  $chapo;
+
 	/**
 	 * 
 	 * @var string
@@ -55,14 +62,14 @@ class Posts
 	*/
 	const INVAILABLE_AUTHOR = 1;
 	const INVAILABLE_TITLE = 2;
-	const INVAILABLE_CONTENT = 3;
+	const INVAILABLE_CHAPO = 3;
+	const INVAILABLE_CONTENT = 4;
 
 	/**
 	 * @access public
 	 * @param array $values 
 	 * @return void
 	 */
-
 	public function __construct($values = []) 
 	{
 		if(!empty($values))
@@ -76,7 +83,6 @@ class Posts
 	 * @param array $data 
 	 * @return void
 	 */
-
 	public function hydrate($datas) 
 	{
 		foreach ($datas as $key => $value)
@@ -103,10 +109,9 @@ class Posts
 	 * @access public
 	 * @return bool
 	 */
-
-	public function isValable() 
+	public function isValablePost() 
 	{
-		return !(empty($this->author) || empty($this->title) || empty($this->content));
+		return (!empty($this->title) && !empty($this->chapo && !empty($this->content)));
 	}
 
 
@@ -151,7 +156,6 @@ class Posts
 	 * @param string $title 
 	 * @return void
 	 */
-
 	public function setTitle($title) 
 	{
 		if(is_string($title) && strlen($title) <= 50 && !empty($title))
@@ -166,13 +170,29 @@ class Posts
 
 	/**
 	 * @access public
+	 * @param string $chapo 
+	 * @return void
+	 */
+	public function setChapo($chapo) 
+	{
+		if(is_string($chapo) && !empty($chapo))
+		{
+			$this->chapo = $chapo;			
+		}
+		else
+		{
+			$this->errors[] = self::INVAILABLE_CHAPO;
+		}
+	}
+
+	/**
+	 * @access public
 	 * @param string $content 
 	 * @return void
 	 */
-
 	public function setContent($content) 
 	{
-		if(is_string($content) && strlen($content) && !empty($content))
+		if(is_string($content) && !empty($content))
 		{
 			$this->content = $content;			
 		}
@@ -187,7 +207,6 @@ class Posts
 	 * @param datetime $addDate 		
 	 * @return void
 	 */
-
 	public function setAddDate(\DateTime $addDate) 
 	{
 		$this->addDate = $addDate;
@@ -198,7 +217,6 @@ class Posts
 	 * @param datetime $updateDate 
 	 * @return void
 	 */
-
 	public function setUpdateDate(\DateTime $updateDate) 
 	{
 		$this->updateDate = $updateDate;
@@ -212,7 +230,6 @@ class Posts
 	 * @access public
 	 * @return array
 	 */
-
 	public function errors() 
 	{
 		return $this->errors;
@@ -222,7 +239,6 @@ class Posts
 	 * @access public
 	 * @return int
 	 */
-
 	public function id() 
 	{
 		return (int)$this->id;
@@ -232,7 +248,6 @@ class Posts
 	 * @access public
 	 * @return string
 	 */
-
 	public function author() 
 	{
 		return $this->author;
@@ -242,17 +257,24 @@ class Posts
 	 * @access public
 	 * @return string
 	 */
-
 	public function title() 
 	{
 		return $this->title;
+	}
+
+		/**
+	 * @access public
+	 * @return string
+	 */
+	public function chapo() 
+	{
+		return $this->chapo;
 	}
 
 	/**
 	 * @access public
 	 * @return string
 	 */
-
 	public function content() 
 	{
 		return $this->content;
@@ -262,7 +284,6 @@ class Posts
 	 * @access public
 	 * @return datetime
 	 */
-
 	public function addDate() 
 	{
 		return $this->addDate;
@@ -272,7 +293,6 @@ class Posts
 	 * @access public
 	 * @return datetime
 	 */
-
 	public function updateDate() 
 	{
 		return $this->updateDate;

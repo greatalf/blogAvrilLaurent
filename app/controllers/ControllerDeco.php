@@ -1,6 +1,6 @@
 <?php
 session_start();
-setcookie("deco", $deco = 'Vous avez bien été déconnecté', time()+(2));
+setcookie("deco", $deco = 'Vous avez bien été déconnecté.', time()+(2));
 session_destroy();
 header('Location:connexion');
-?>
+exit();
