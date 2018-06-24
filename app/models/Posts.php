@@ -1,4 +1,7 @@
 <?php
+
+namespace Laurent\App\Models;
+
 class Posts
 {
 	/**
@@ -207,7 +210,7 @@ class Posts
 	 * @param datetime $addDate 		
 	 * @return void
 	 */
-	public function setAddDate(\DateTime $addDate) 
+	public function setAddDate($addDate) 
 	{
 		$this->addDate = $addDate;
 	}
@@ -217,7 +220,7 @@ class Posts
 	 * @param datetime $updateDate 
 	 * @return void
 	 */
-	public function setUpdateDate(\DateTime $updateDate) 
+	public function setUpdateDate($updateDate) 
 	{
 		$this->updateDate = $updateDate;
 	}

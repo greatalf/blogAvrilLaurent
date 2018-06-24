@@ -1,6 +1,10 @@
 <?php
+
+namespace Laurent\App\Models;
+
 require_once 'app/models/Users.php';
 require_once 'app/models/Model.php';
+
 
 class UsersManager extends Model
 {
@@ -13,7 +17,7 @@ class UsersManager extends Model
     /**
      * @param PDO $_db
      */
-	public function __construct(PDO $_db)
+	public function __construct(\PDO $_db)
 	{
 		$this->_db = $_db;
 	}

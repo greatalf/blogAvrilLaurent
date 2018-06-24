@@ -1,4 +1,6 @@
 <?php
+namespace Laurent\App\Views;
+
 class View
 {
 	private $_file,
@@ -7,16 +9,6 @@ class View
 	public function __construct($action)
 	{
 		$this->_file = 'app/views/view' . ucfirst($action) . '.php';
-	}
-
-	public function getFile()
-	{
-		return $this->_file;
-	}
-
-	public function __toString()
-	{
-		return $this->getFile();
 	}
 
 	/**
@@ -48,13 +40,13 @@ class View
 
 			//Je veux envoyer un paramètre avec le require $file
 			ob_start();
-			require $file;
+			require_once $file;
 			return ob_get_clean();
 		}
 		elseif(file_exists($file))
 		{
 			ob_start();
-			require $file;
+			require_once $file;
 			return ob_get_clean();
 		}
 		else

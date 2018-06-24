@@ -1,5 +1,6 @@
 <?php
-session_start();
+use Laurent\App\Session;
+// session_start();
 // $this->_t = 'Mon blog';
 ?>
     <header>

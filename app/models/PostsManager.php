@@ -1,11 +1,14 @@
 <?php
+namespace Laurent\App\Models;
+
+use Laurent\App\Models\Posts;
+
 require_once 'app/models/Posts.php';
 require_once 'app/models/Model.php';
 
 class PostsManager extends Model
 {
 	/**
-	 * 
 	 * @var \PDO
 	 * @access protected
 	 */
@@ -14,8 +17,9 @@ class PostsManager extends Model
     /**
      * @param PDO $_db
      */
-	public function __construct(PDO $_db)
+	public function __construct(\PDO $_db)
 	{
+		$_db = $this->dbConnect();
 		$this->_db = $_db;
 	}
 
@@ -85,25 +89,17 @@ class PostsManager extends Model
 		}
 
 		$request = $this->_db->query($sql);
-		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
-		$listPosts = $request->fetchAll();
+		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
+		$posts = [];
 
-		//Implémentation des dates d'ajout et de modification en temps qu'instances de DateTime.
-		foreach ($listPosts as $posts)
-        {
-            if($posts->updateDate() != NULL)
-            {
-                $posts->setAddDate(new \DateTime($posts->addDate()));
-                $posts->setUpdateDate(new \DateTime($posts->updateDate()));                
-            }
-            else
-            {
-                $posts->setAddDate(new \DateTime($posts->addDate()));
-            }
-        }
+		while ($data = $request->fetch())
+		{
+			$posts[] = new Posts($data);
+		}
 
         $request->closeCursor();
-        return $listPosts;
+        return $posts;
+        
 	}
 
 	public function getMyList($debut = -1, $limite = -1)
@@ -153,14 +149,19 @@ class PostsManager extends Model
 
 		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
 
-		$post = $request->fetch();
+		$post = [];
+
+		$data = $request->fetch();
+
+		$post[] = new Posts($data);
+
 		//Verify the post existence
-		if($post != false)
-		{
-			$post->setUpdateDate(new \DateTime($post->updateDate()));
-			$post->setAddDate(new \DateTime($post->addDate()));		
-			return $post;
-		}
+		
+		// $post->setAddDate(new \DateTime($posts->addDate()));
+		// $post->setUpdateDate(new \DateTime($posts->updateDate()));
+
+		
+		return $post;
 	}
 
     /**

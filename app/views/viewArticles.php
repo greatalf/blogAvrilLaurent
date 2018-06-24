@@ -1,6 +1,20 @@
 <?php
+use Laurent\App\Session;
 $this->_t = 'Articles';
-!isset($_GET['post_update']) ? Session::flash() : '';
+foreach($posts as $post) :
+?>
+<h3 id="post_h1_title"><?= $post->title() ?></h3>
+<p><em><strong><?= $post->chapo() ?></strong></em></p>
+<p><?=  strlen($post->content()) <= 150 ? $post->content() : substr($post->content(), 0, 150) . '...' ?></p>
+<p><?= $post->updateDate() != NULL ? 'Écrit le ' . $post->addDate() . ' par <em> ' . $post->author() . '</em>, modifié le ' . $post->updateDate() : 'Écrit le ' . $post->addDate()?></p>
+<a href="article&post_id=<?= $post->id() ?>"><p id="read_all">Lire la suite...</p></a>
+<?php //boutton_update($post->id()) . boutton_del($post->id()) ?>
+<hr>
+<?php endforeach; ?>
+<br>
+<br>
+<br>
+<?php !isset($_GET['post_update']) ? Session::flash() : '';
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////Mettre ça dans une classe //////////////////////////////
@@ -31,17 +45,9 @@ function boutton_update($refUpdate)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+?>
 
 
-foreach($posts as $post) : ?>
-<h3 id="post_h1_title"><?= $post->title() ?></h3>
-<p><em><strong><?= $post->chapo() ?></strong></em></p>
-<p><?=  strlen($post->content()) <= 150 ? $post->content() : substr($post->content(), 0, 150) . '...' ?></p>
-<p><?= $post->updateDate() != NULL ? 'Écrit le ' . $post->addDate()->format('d/m/Y à H:i') . ' par <em> ' . $post->author() . '</em>, modifié le ' . $post->updateDate()->format('d/m/Y à H:i') : 'Écrit le ' . $post->addDate()->format('d/m/Y à H:i')?></p>
-<a href="article&post_id=<?= $post->id() ?>"><p id="read_all">Lire la suite...</p></a>
-<?= boutton_update($post->id()) . boutton_del($post->id()) ?>
-<hr>
-<?php endforeach; ?>
 
 <br>
 <br>
@@ -65,7 +71,7 @@ foreach($posts as $post) : ?>
   <?php endif; ?>
   <div class="form-group">
     <label for="post_author">Auteur</label>
-    <input type="text" name="post_author" value="<?= isset($_SESSION['auth']) ? str_replace('<br />', '', ($_SESSION['username'])) : ''?><?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->author())) : ''?>" class="form-control" id="post_author" placeholder="L'auteur">
+    <input type="text" name="post_author" value="<?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->author())) : ''?>" class="form-control" id="post_author" placeholder="L'auteur">
   </div>
   <div class="form-group">
     <label for="post_title">Titre</label>

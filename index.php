@@ -1,8 +1,7 @@
 <?php
-session_start();
-require_once 'app/Autoload.php';
-require 'app/controllers/Router.php';
 
-Autoloader::register();
+require 'vendor/autoload.php';
+require 'app/Router.php';
+
 $router = new Router;
 $router->routeReq();

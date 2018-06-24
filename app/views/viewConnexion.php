@@ -1,5 +1,6 @@
 <?php
 $this->_t = 'Connexion';
+use Laurent\App\Session;
 
 SESSION::flash();
 SESSION::cookieFlash('deco', 'success');

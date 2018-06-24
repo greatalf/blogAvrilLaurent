@@ -1,0 +1,17 @@
+{
+    "name": "avril/blog_avril_laurent",
+    "authors": [
+        {
+            "name": "Greatalf",
+            "email": "avril.laurent974@yahoo.fr"
+        }
+    ],
+    "require": {
+        "respect/validation": "^1.1"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Laurent\\App\\" : "app/"
+        }
+    }
+}

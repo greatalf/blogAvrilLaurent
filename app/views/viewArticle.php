@@ -1,20 +1,23 @@
 <?php
+use Laurent\App\Session;
+
+SESSION::flash();
+
 $this->_t = 'Article';
-?>
+foreach ($onePost as $post) : ?>
 <div class="post_general">
 	<h3 style="color: #FFFFFF;"><?= $post->title() ?></h3>
   <p><em><strong><?= $post->chapo() ?></strong></em></p>
 	<br>
 	<p><?= $post->content() ?></p>
 	<p>Auteur : <u><?= $post->author() ?></u></p>
-	<time id="update_com_form" class="date_writen_post"><?= 'Écrit le ' . $post->addDate()->format('d/m/Y à H:i') ?><?= $post->updateDate()->format('d/m/Y à H:i') != NULL ? ', modifié le ' . $post->updateDate()->format('d/m/Y à H:i') . '.' : ''?></time>
+	<time id="update_com_form" class="date_writen_post"><?= 'Écrit le ' . $post->addDate() ?><?= $post->updateDate() != NULL ? ', modifié le ' . $post->updateDate() . '.' : ''?></time>
 </div>
+<?php endforeach; ?>
 <br>
 <br>
 <br>
-<?php
-  SESSION::flash();
-?>
+
 <h4>Commentaires :</h4>
 
 <form action="" method="post" >
@@ -32,7 +35,7 @@ $this->_t = 'Article';
     <label for="message">Message</label>
     <textarea class="form-control" name="com_content" id="message" rows="4" placeholder="Votre commentaire..." <?= isset($_GET['post_update']) ? 'autofocus' : '' ?>><?= isset($_GET['comment_update']) ? str_replace('<br />', '', ($comment->content())) : ''?></textarea>
   </div>
-  <button type="submit" name="<?= isset($_GET['comment_update']) ? 'com_update' : 'com_submit'?>" class="btn btn-primary"><?= isset($_GET['comment_update']) ? 'Valider la modification' : 'Envoyer'?></button>
+  <button type="submit" name="<?= isset($_GET['comment_update']) ? 'com_update' : 'com_submit' ?>" class="btn btn-primary"><?= isset($_GET['comment_update']) ? 'Valider la modification' : 'Envoyer'?></button>
 </form>
 
 <hr>
@@ -80,7 +83,7 @@ foreach ($comments as $comment) :
   <p class="content_com"><?= $comment->content() ?></p>
   <?= boutton_update($comment->id()) . boutton_del($comment->id()) ?>
   <p class="date_writen_com"><em><?= 
-  $comment->updateDate() != NULL ? "Posté le " . $comment->addDate()->format('d/m/Y à H:i') . ", modifié le " . $comment->updateDate()->format('d/m/Y à H:i') : "Posté le " . $comment->addDate()->format('d/m/Y à H:i');
+  $comment->updateDate() != NULL ? "Posté le " . $comment->addDate() . ", modifié le " . $comment->updateDate() : "Posté le " . $comment->addDate();
   ?></em></p>
 <hr>
 <?php

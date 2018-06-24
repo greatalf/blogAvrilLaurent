@@ -1,7 +1,6 @@
 <?php
+use Laurent\App\Session;
 $this->_t = 'Inscription';
-// var_dump($_SESSION);
-// var_dump($_COOKIE);
 SESSION::flash();
 Session::cookieFlash('denied');
 ?>
