@@ -180,7 +180,7 @@ class Users
 	 */
 	public function setEmail($email) 
 	{
-		if(is_string($email) && strlen($email) >= 100 && !empty($email))
+		if(is_string($email) && strlen($email) <= 100 && !empty($email))
 		{
 			$this->email = $email;			
 		}

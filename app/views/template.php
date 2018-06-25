@@ -83,7 +83,7 @@
                                 <a href="http://localhost/Blog_Avril_Laurent/admin">Mon espace</a>
                             </li>
                             <li>
-                                <a href="http://localhost/Blog_Avril_Laurent/deco">Se déconnecter</a>
+                                <a href="http://localhost/Blog_Avril_Laurent/deconnexion">Se déconnecter</a>
                             </li>
                         </ul>
                     </li>
@@ -93,8 +93,8 @@
         </div>
     </nav>
 
-    <!-- Article Section -->
-    <section id="articles" class="success">
+    <!-- Article Section -->    
+    <section id="articles" class="success"><!-- class="success" -->
         <div class="container">
             <h1 class="text-center"><?= $t ?></h1>
             <div class="row">

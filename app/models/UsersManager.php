@@ -127,10 +127,13 @@ class UsersManager extends Model
 		$request = $this->_db->prepare('SELECT * FROM users WHERE id = ?');
 			$request->execute(array($id));
 
-			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-			$userInfos = $request->fetch();
- 			return $userInfos;
+		$data = $request->fetch();
+
+		$userInfos = new Users($data);
+
+		return $userInfos;
 	}
 
 	public function checkUser()
@@ -145,10 +148,15 @@ class UsersManager extends Model
 			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
 			$request->execute(array($connect_email, md5($connect_pass)));
 
-			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
-			$user = $request->fetch();
+			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-			return $user;
+			while ($data = $request->fetch())
+			{
+				$user = new Users($data);
+			}
+
+	        $request->closeCursor();
+	        return $user;
 		}
 	}
 
@@ -210,9 +218,14 @@ class UsersManager extends Model
 		$request = $this->_db->query('SELECT * FROM users');
 		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-		$allUsers = $request->fetchAll();
-		$request->closeCursor();
+		$allUsers = [];
 
+		while ($data = $request->fetch())
+		{
+			$allUsers[] = new Users($data);
+		}
+
+		$request->closeCursor();
 		return $allUsers;
 	}
 

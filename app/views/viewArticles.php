@@ -1,6 +1,8 @@
 <?php
 use Laurent\App\Session;
 $this->_t = 'Articles';
+Session::flash();
+
 foreach($posts as $post) :
 ?>
 <h3 id="post_h1_title"><?= $post->title() ?></h3>
@@ -14,7 +16,7 @@ foreach($posts as $post) :
 <br>
 <br>
 <br>
-<?php !isset($_GET['post_update']) ? Session::flash() : '';
+<?php
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////Mettre ça dans une classe //////////////////////////////
@@ -49,26 +51,13 @@ function boutton_update($refUpdate)
 
 
 
-<br>
-<br>
-<br>
-
+<?php if(isset($_SESSION['rank']) && $_SESSION['rank'] == 2) : ?>
 <hr>
 <h4 id="update_post_form">Écrivez un article : </h4>
 <br>
-<?php isset($_GET['post_update']) ? Session::flash() : ''; ?>
-<br>
+
 <form action="" method="post" >
-<?php if(!isset($_SESSION['auth'])) : ?>
-  <div class="form-group">
-    <label for="email">Email</label>
-    <input type="text" name="connect_email" value="" class="form-control" id="email" placeholder="nom@exemple.com">
-  </div>
-  <div class="form-group">
-    <label for="pass">Mot de Passe</label>
-    <input type="password" name="connect_pass" value="" class="form-control" id="pass" placeholder="Mot de Passe">
-  </div>
-  <?php endif; ?>
+  
   <div class="form-group">
     <label for="post_author">Auteur</label>
     <input type="text" name="post_author" value="<?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->author())) : ''?>" class="form-control" id="post_author" placeholder="L'auteur">
@@ -88,3 +77,4 @@ function boutton_update($refUpdate)
   <button type="submit" name="<?= isset($_GET['post_update']) ? 'post_update' : 'post_submit'?>" class="btn btn-primary"><?= isset($_GET['post_update']) ? 'Valider la modification' : 'Envoyer'?></button>
 </form>
 <hr>
+<?php endif; ?>

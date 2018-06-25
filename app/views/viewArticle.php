@@ -20,17 +20,8 @@ foreach ($onePost as $post) : ?>
 
 <h4>Commentaires :</h4>
 
+<?php if(isset($_SESSION['auth'])) : ?>
 <form action="" method="post" >
-<?php if(!isset($_SESSION['auth'])) : ?>
-  <div class="form-group">
-    <label for="email">Email</label>
-    <input type="text" name="connect_email" value="" class="form-control" id="email" placeholder="nom@exemple.com">
-  </div>
-  <div class="form-group">
-    <label for="pass">Mot de Passe</label>
-    <input type="password" name="connect_pass" value="" class="form-control" id="pass" placeholder="Mot de Passe">
-  </div>
-  <?php endif; ?>
   <div class="form-group">
     <label for="message">Message</label>
     <textarea class="form-control" name="com_content" id="message" rows="4" placeholder="Votre commentaire..." <?= isset($_GET['post_update']) ? 'autofocus' : '' ?>><?= isset($_GET['comment_update']) ? str_replace('<br />', '', ($comment->content())) : ''?></textarea>
@@ -38,10 +29,14 @@ foreach ($onePost as $post) : ?>
   <button type="submit" name="<?= isset($_GET['comment_update']) ? 'com_update' : 'com_submit' ?>" class="btn btn-primary"><?= isset($_GET['comment_update']) ? 'Valider la modification' : 'Envoyer'?></button>
 </form>
 
+<?php else : ?>
+<p>Vous devez être connecté pour laisser un commentaire : <a href="http://localhost/Blog_Avril_Laurent/connexion">=>Je me connecte<=</a></p>
+
+<?php endif; ?>
 <hr>
 
 <?php 
-echo (count($comments) == 0) ? 'Aucun commentaire n\'a été posté pour cet article!' : '';
+echo (count($comments) == 0) ? 'Aucun commentaire n\'a encore été posté pour cet article!' : '';
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////Mettre ça dans une classe //////////////////////////////

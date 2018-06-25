@@ -15,7 +15,7 @@ Session::cookieFlash('denied');
   	</div>	
  	<div class="form-group">
 	    <label for="email">Email</label>
-	    <input type="email" name="regist_email" value="<?= isset($_POST['regist_email']) ? $_POST['regist_email'] : '' ?>" class="form-control" id="email" placeholder="nom@exemple.com" required="required">
+	    <input type="email" name="regist_email" value="<?= isset($_POST['regist_email']) ? $_POST['regist_email'] : '' ?>" class="form-control" id="email" placeholder="mail@exemple.com" required="required">
   	</div>
 	<div class="form-group">
 		<label for="username">Pseudo</label>
@@ -30,5 +30,5 @@ Session::cookieFlash('denied');
 	    <input type="password" name="regist_password_confirm" value="<?= isset($_POST['regist_password_confirm']) ? $_POST['regist_password_confirm'] : '' ?>" class="form-control" id="regist_password_confirm" placeholder="Retapez le même mot de passe" required="required">
   	</div>
 
-  	<button type="submit" class="btn btn-primary">Se connecter</button>
+  	<button type="submit" class="btn btn-primary" name="regist_submit">Envoyer</button>
 </form>

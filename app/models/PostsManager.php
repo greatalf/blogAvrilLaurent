@@ -155,11 +155,8 @@ class PostsManager extends Model
 
 		$post[] = new Posts($data);
 
-		//Verify the post existence
-		
 		// $post->setAddDate(new \DateTime($posts->addDate()));
 		// $post->setUpdateDate(new \DateTime($posts->updateDate()));
-
 		
 		return $post;
 	}

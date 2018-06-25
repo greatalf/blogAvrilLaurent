@@ -10,10 +10,6 @@ use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
 use \Laurent\App\Session;
 
-require_once 'app/views/View.php';
-require_once 'app/Session.php';
-// require_once 'app/models/Model.php';
-
 class ControllerArticle
 {
 	private $_comment;
@@ -35,40 +31,45 @@ class ControllerArticle
 
     public function getAllPosts()
     {
-    	$posts = $this->_postsManager->getList(0, 5);
-		$this->_view = new View('Articles');			
-		$this->_view->generate(array('posts' => $posts));
-		exit();			
-    }
+    	$GLOBALS['posts'] = $this->_postsManager->getList(0, 5);
+    	$this->renderViewArticles();
+		// $this->_view = new View('Articles');			
+		// $this->_view->generate(array('posts' => $posts));
+		// $this->verifyConnectUser();
+		// exit();			
+    }    
 
     public function getUniquePost()
     {    	
 	    $post_id = htmlspecialchars($_GET['post_id']);
 	    $onePost = $this->_postsManager->getUnique($post_id);
 
+		if($onePost[0]->id() != 0)
+		{
 			if(isset($post_id) && $onePost)
 			{
 				$comments = $this->_commentsManager->getListComments($post_id);
-				// $user = $this->_usersManager->checkUser();
+
+				$this->addComment();
 
 				if(!headers_sent())
-					{
-						$this->_view = new View('Article');			
-						$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments/*, 'user' => $user*/));
-						exit();			
-					}
+				{
+					$this->_view = new View('Article');	
+					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments));
+					exit();			
+				}
 			}
-			else
-			{
-				SESSION::setFlash('L\'article demandé est inexistant!');
-				header('Location:articles');
-				exit();
-			}
+		}
+		else
+		{
+			SESSION::setFlash('L\'article demandé est inexistant!');
+			header('Location: articles');
+			exit();
+		}
     }
 
     public function addComment()
     {    	
-    	$this->connectUser();
     	$post_id = htmlspecialchars($_GET['post_id']);
 
 		if(isset($_SESSION['auth']))
@@ -90,38 +91,22 @@ class ControllerArticle
 			}
 			elseif(empty($_POST['com_content']) && isset($_POST['com_submit']))
 			{
-				SESSION::setFlash('Veuillez remplir tous les champs correctement.');
+				SESSION::setFlash('Veuillez remplir le champs "commentaire" correctement.');
 				header('Location: article&post_id=' . $post_id);
 				exit();
 			}
 		}
 	}	
 
-	public function connectUser()
-	{
-		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
-		{
-			$user = $this->_usersManager->checkUser();
-			if($user != false && !isset($_SESSION['auth']))
-			{
-				// Initialisation des datas
-				$_SESSION['auth'] = 1;
-				$_SESSION['id'] = $user->id();
-				$_SESSION['lastname'] = $user->lastname();
-				$_SESSION['firstname'] = $user->firstname();
-				$_SESSION['email'] = $user->email();
-				$_SESSION['username'] = $user->username();
-				$_SESSION['password'] = $user->password();
-				$_SESSION['rank'] = $user->rank();
-			}
-			else
-			{
-				SESSION::setFlash('Le mot de passe et l\'adresse email ne correspondent pas!');
-				header('Refresh:0, url=article&post_id=' . $post_id);
-				exit();
-			}
+	public function renderViewArticles()
+	{		
+		if(!headers_sent())
+		{						
+				$this->_view = new View('Articles');		
+				$this->_view->generate(array('posts' => $GLOBALS['posts']));		
 		}
 	}
+
 }
 
 ///////////////////////////////////////////////////////////

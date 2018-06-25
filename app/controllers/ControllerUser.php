@@ -37,22 +37,30 @@ class ControllerUser
 	{		
 		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
 		{
-			$user = $this->_usersManager->checkUser();
-			if($user != false && !isset($_SESSION['auth']))
-			{
-				// Initialisation des datas
-				$_SESSION['auth'] = 1;
-				$_SESSION['id'] = $user->id();
-				$_SESSION['lastname'] = $user->lastname();
-				$_SESSION['firstname'] = $user->firstname();
-				$_SESSION['email'] = $user->email();
-				$_SESSION['username'] = $user->username();
-				$_SESSION['password'] = $user->password();
-				$_SESSION['rank'] = $user->rank();
+			if(isset($_POST['connect_submit']))
+			{				
+				$user = $this->_usersManager->checkUser();
+				if($user != false && !isset($_SESSION['auth']))
+				{
+					// Initialisation des datas
+					$_SESSION['auth'] = 1;
+					$_SESSION['id'] = $user->id();
+					$_SESSION['lastname'] = $user->lastname();
+					$_SESSION['firstname'] = $user->firstname();
+					$_SESSION['email'] = $user->email();
+					$_SESSION['username'] = $user->username();
+					$_SESSION['password'] = $user->password();
+					$_SESSION['rank'] = $user->rank();
+
+					SESSION::setFlash('Bienvenue, ' . $_SESSION['username'] . ' !', 'success');
+					header('Location: articles');
+					exit();
+				}
 			}
 		}
-	$this->_view = new View('Connexion');
+	$this->_view = new View('connexion');
 	$this->_view->generate(NULL);
+	exit();
 	}
 
 	public function register()
@@ -180,5 +188,29 @@ class ControllerUser
 		$this->_view = new View('Connexion');
 		$this->_view->generate(NULL);
 		exit();
+		// $this->_view = new View('Connexion');
+		// $this->_view->generate(NULL);
 	}
+
+
+
+			
+		// 	if(isset($_SESSION['auth']))
+		// 	{
+		// 		header('Location:articles');
+		// 		exit();
+		// 	}
+		// 	else
+		// 	{
+		// 		SESSION::setFlash('Les champs sont mal remplis!');
+		// 		$this->_view = new View('Register');
+		// 		$this->_view->generate(NULL);
+		// 	}
+		// }
+		// else
+		// {
+		// 	// SESSION::setFlash('Remplir tous les champs', 'warning');
+		// 	$this->_view = new View('Register');
+		// 	$this->_view->generate(NULL);
+		// }
 }

@@ -4,17 +4,17 @@ namespace Laurent\App\Controllers;
 use \Laurent\App\Models\PostsManager;
 use \Laurent\App\Models\CommentsManager;
 use \Laurent\App\Models\UsersManager;
+use \Laurent\App\Models\Users;
 use \Laurent\App\Models\Model;
 use Laurent\App\Views\View;
+use \Laurent\App\Session;
 
 
-require_once 'app/views/View.php';
-
-
-class ControllerCommentaire
+class ControllerApp
 {
-	private $_commentsManager,
-			$_view;
+	private $_view,
+			$_user,
+			$_usersManager;
 
 	public function __construct()
 	{ 	
@@ -24,8 +24,5 @@ class ControllerCommentaire
 		$this->_usersManager = new UsersManager($_db);
 	}
 
-	public function comment()
-	{		
-			
-	}
+	
 }
