@@ -152,6 +152,34 @@ class UsersManager extends Model
 		}
 	}
 
+	public function checkEmail()
+	{
+		if(isset($_POST['regist_email']))
+		{
+			$regist_email = htmlspecialchars($_POST['regist_email']);
+
+			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE email = ?');
+			$request->execute([$regist_email]);
+			$countEmail = $request->fetchColumn();
+
+			return $countEmail;
+		}
+	}
+
+		public function checkPseudo()
+	{
+		if(isset($_POST['regist_username']))
+		{
+			$regist_username = htmlspecialchars($_POST['regist_username']);
+
+			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE username = ?');
+			$request->execute([$regist_username]);
+			$countPseudo = $request->fetchColumn();
+
+			return $countPseudo;
+		}
+	}
+
 	public function confirmUser()
 	{
 		$user_id = htmlspecialchars($_GET['user_id']);
