@@ -1,7 +1,22 @@
-<?php 
+<?php
+
+namespace Laurent\App\Models;
+
 class Model
 {
-    protected $_db;
+     protected $_db;
+
+    /**
+     * Connect to the database
+     * @return mixed
+     */
+    public function dbConnect()
+    {
+        $_db = new \PDO('mysql:host=localhost;dbname=my_blog;charset=utf8', 'root', '');
+        $_db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        
+        return $this->_db = $_db;
+    }
 
     /**
      * @param $length

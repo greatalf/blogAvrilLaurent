@@ -1,4 +1,5 @@
 <?php
+namespace Laurent\App;
 if(session_status() == PHP_SESSION_NONE)
 {
 	session_start();

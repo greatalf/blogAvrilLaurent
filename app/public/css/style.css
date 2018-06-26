@@ -1,13 +1,23 @@
 body
 {
-  margin-top: 0px;
+  margin-top: 120px;
+  overflow: auto;
 }
 
 .navig
 {
 
 }
-/*.navbar{display: none;}*/
+
+#read_all
+{
+	color: #000000;
+}
+
+#read_all:hover
+{
+	text-decoration: underline;
+}
 
 #drop-menu
 {
@@ -17,6 +27,11 @@ body
 #registerIcon
 {
 	margin-top: 8px;
+}
+
+#post_h1_title
+{
+	color: #FFFFFF;
 }
 
 #adminLink:hover
@@ -56,14 +71,7 @@ a
 	color: white;
 }
 
-table
-{
-  margin:auto;
-  text-align: center;
-  border-collapse: collapse;
-}
-
-td
+/*td
 {
   padding: 3px;
 }
@@ -89,7 +97,7 @@ table, th
 td
 {
   padding: 3px;
-}
+}*/
 
 @media (max-width: 767px) {
   #registerIconBar

@@ -1,6 +1,10 @@
 <?php
+
+namespace Laurent\App\Models;
+
 require_once 'app/models/Users.php';
 require_once 'app/models/Model.php';
+
 
 class UsersManager extends Model
 {
@@ -13,7 +17,7 @@ class UsersManager extends Model
     /**
      * @param PDO $_db
      */
-	public function __construct(PDO $_db)
+	public function __construct(\PDO $_db)
 	{
 		$this->_db = $_db;
 	}
@@ -123,10 +127,13 @@ class UsersManager extends Model
 		$request = $this->_db->prepare('SELECT * FROM users WHERE id = ?');
 			$request->execute(array($id));
 
-			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-			$userInfos = $request->fetch();
- 			return $userInfos;
+		$data = $request->fetch();
+
+		$userInfos = new Users($data);
+
+		return $userInfos;
 	}
 
 	public function checkUser()
@@ -141,10 +148,43 @@ class UsersManager extends Model
 			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
 			$request->execute(array($connect_email, md5($connect_pass)));
 
-			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
-			$user = $request->fetch();
+			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-			return $user;
+			while ($data = $request->fetch())
+			{
+				$user = new Users($data);
+			}
+
+	        $request->closeCursor();
+	        return $user;
+		}
+	}
+
+	public function checkEmail()
+	{
+		if(isset($_POST['regist_email']))
+		{
+			$regist_email = htmlspecialchars($_POST['regist_email']);
+
+			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE email = ?');
+			$request->execute([$regist_email]);
+			$countEmail = $request->fetchColumn();
+
+			return $countEmail;
+		}
+	}
+
+		public function checkPseudo()
+	{
+		if(isset($_POST['regist_username']))
+		{
+			$regist_username = htmlspecialchars($_POST['regist_username']);
+
+			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE username = ?');
+			$request->execute([$regist_username]);
+			$countPseudo = $request->fetchColumn();
+
+			return $countPseudo;
 		}
 	}
 
@@ -178,9 +218,14 @@ class UsersManager extends Model
 		$request = $this->_db->query('SELECT * FROM users');
 		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-		$allUsers = $request->fetchAll();
-		$request->closeCursor();
+		$allUsers = [];
 
+		while ($data = $request->fetch())
+		{
+			$allUsers[] = new Users($data);
+		}
+
+		$request->closeCursor();
 		return $allUsers;
 	}
 

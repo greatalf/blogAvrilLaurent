@@ -1,6 +1,8 @@
 <?php
+namespace Laurent\App\Controllers;
 require_once 'app/views/View.php';
 session_start();
+
 
 class ControllerArticles
 {
@@ -11,20 +13,14 @@ class ControllerArticles
 
 	public function __construct()
 	{ 	
-		if(isset($url) && count($url) > 1)
-		{
-			throw new \Exception('Page Introuvable');
-		}
-		else
-		{
-			$this->posts(); 
-		}
+		$_db = (new Model())->dbConnect();
+		$this->_postsManager = new PostsManager($_db);
+		$this->_commentsManager = new CommentsManager($_db);
+		$this->_usersManager = new UsersManager($_db);
 	}
 
 	public function posts()
 	{
-		$db = DBFactory::getConnexionPDO();
-
 		require_once 'app/models/Posts.php';
 		require_once 'app/models/PostsManager.php';
 		require_once 'app/models/UsersManager.php';
