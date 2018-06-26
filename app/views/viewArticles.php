@@ -1,7 +1,7 @@
 <?php
-use Laurent\App\Session;
+use Laurent\App\Service\Flash;
 $this->_t = 'Articles';
-Session::flash();
+FLASH::flash();
 
 foreach($posts as $post) :
 ?>
@@ -60,7 +60,7 @@ function boutton_update($refUpdate)
   
   <div class="form-group">
     <label for="post_author">Auteur</label>
-    <input type="text" name="post_author" value="<?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->author())) : ''?>" class="form-control" id="post_author" placeholder="L'auteur">
+    <input type="text" name="post_author" value="<?= $_SESSION['username'] ?>" class="form-control" id="post_author" placeholder="L'auteur">
   </div>
   <div class="form-group">
     <label for="post_title">Titre</label>

@@ -1,10 +1,10 @@
 <?php
-namespace Laurent\App;
+namespace Laurent\App\Service;
 if(session_status() == PHP_SESSION_NONE)
 {
 	session_start();
 }
-class Session
+class Flash
 {
 	public static function setFlash($message, $type = 'danger')
 	{

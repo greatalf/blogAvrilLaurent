@@ -5,8 +5,9 @@ use \Laurent\App\Models\PostsManager;
 use \Laurent\App\Models\CommentsManager;
 use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
+use \Laurent\App\Controllers\ControllerArticle;
 use Laurent\App\Views\View;
-use Laurent\App\Session;
+use Laurent\App\Service\Flash;
 
 class ControllerAdmin
 {
@@ -20,6 +21,7 @@ class ControllerAdmin
 		$this->_postsManager = new PostsManager($_db);
 		$this->_commentsManager = new CommentsManager($_db);
 		$this->_usersManager = new UsersManager($_db);
+		$this->_controllerArticle = new ControllerArticle();
 	}
 
 
@@ -27,55 +29,63 @@ class ControllerAdmin
     {
     	if(isset($_SESSION['auth']))
     	{
+    		if(isset($_SESSION['rank']) && $_SESSION['rank'] == 1)
+	    	{
+	    		
+	    	}
+    		
     		if(isset($_SESSION['rank']) && $_SESSION['rank'] == 2)
 	    	{
 	    		$this->writeAPost();
 	    	}	    	
-		}
 		$this->renderViewAdmin();			
 		exit();
+		}
+		else
+		{
+			FLASH::setFlash('Une connexion est requise pour accéder à l\'espace d\'administration!');
+			header('Location: connexion');
+			exit();
+		}
     }
     
 
     public function writeAPost()
-    {	
-    	if(isset($_SESSION['auth']))
-		{
-			if(isset($_POST['post_submit']))
-			{				
-				$author = isset($_POST['post_author']) ? htmlspecialchars($_POST['post_author']) : '';
-				$title = isset($_POST['post_title']) ? htmlspecialchars($_POST['post_title']) : '';
-				$chapo = isset($_POST['post_chapo']) ? htmlspecialchars($_POST['post_chapo']) : '';
-				$content = isset($_POST['post_content']) ? htmlspecialchars($_POST['post_content']) : '';
+    {
+		if(isset($_POST['post_submit']))
+		{				
+			$author = isset($_POST['post_author']) ? htmlspecialchars($_POST['post_author']) : '';
+			$title = isset($_POST['post_title']) ? htmlspecialchars($_POST['post_title']) : '';
+			$chapo = isset($_POST['post_chapo']) ? htmlspecialchars($_POST['post_chapo']) : '';
+			$content = isset($_POST['post_content']) ? htmlspecialchars($_POST['post_content']) : '';
 		    	    		
-				if(!empty($email) && !empty($author) && !empty($title) && !empty($chapo) && !empty($content))
-				{
-					$this->addAPost();
-				}	
-				else
-				{
-					SESSION::setFlash('Veuillez remplir tous les champs  correctement!');
-					header('Location: article&post_id=' . $post_id);
-					exit();
-				}
-		    }
-		}    	
-    }
+			if(!empty($author) && !empty($title) && !empty($chapo) && !empty($content))
+			{
+				$this->addAPost();
+			}	
+			else
+			{
+				FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
+				header('Location: articles');
+				exit();
+			}
+	    }
+	}    	
 
     public function addAPost()
     {    
 		$this->_post = new Posts
 			([
-				'author' => $_SESSION['username'],
-				'title' => $_POST['com_title'],
-				'chapo' => $_POST['com_chapo'],
-				'content' => $_POST['com_content'],
+				'author' => $_POST['post_author'],
+				'title' => $_POST['post_title'],
+				'chapo' => $_POST['post_chapo'],
+				'content' => $_POST['post_content'],
 				'addDate' => new \DateTime()
 			]);
 
 		$this->_postsManager->add($this->_post);
 
-		SESSION::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
+		FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
 		header('Refresh:0, url=article&post_id=' . $post_id);
 		exit();
 	}	
@@ -132,7 +142,7 @@ class ControllerAdmin
 
 	// 					$this->_postsManager->delete($this->_post);
 	// 					//Affichage du message msg flash
-	// 					SESSION::setFlash('L\'article a bien été supprimé.', 'success');
+	// 					FLASH::setFlash('L\'article a bien été supprimé.', 'success');
 
 	// 					header('Refresh:0, url=admin');
 	// 					exit();
@@ -150,7 +160,7 @@ class ControllerAdmin
 						
 	// 					$this->_usersManager->delete($this->_user);
 	// 					//Affichage du message msg flash
-	// 					SESSION::setFlash('L\'utilisateur a bien été bannit.', 'success');
+	// 					FLASH::setFlash('L\'utilisateur a bien été bannit.', 'success');
 
 	// 					header('Location:admin');
 	// 					exit();
@@ -177,7 +187,7 @@ class ControllerAdmin
 	// 	}
 	// 	else
 	// 	{
-	// 		SESSION::setFlash('Vous n\'êtes pas autorisé à accéder à cette page');
+	// 		FLASH::setFlash('Vous n\'êtes pas autorisé à accéder à cette page');
 	// 		header('Location:connexion');
 	// 		exit();
 	// 	}

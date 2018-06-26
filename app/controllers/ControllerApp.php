@@ -7,8 +7,7 @@ use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Users;
 use \Laurent\App\Models\Model;
 use Laurent\App\Views\View;
-use \Laurent\App\Session;
-
+use Laurent\App\Service\Flash;
 
 class ControllerApp
 {
@@ -22,6 +21,13 @@ class ControllerApp
 		$this->_postsManager = new PostsManager($_db);
 		$this->_commentsManager = new CommentsManager($_db);
 		$this->_usersManager = new UsersManager($_db);
+	}
+
+	public function home()
+	{	
+		$this->_view = new View('Accueil');
+		$this->_view->generate(NULL);
+		exit();
 	}
 
 	

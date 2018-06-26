@@ -51,7 +51,7 @@ class View
 		}
 		else
 		{
-			throw new Exception ('Fichier ' . $file . ' introuvable');
+			throw new \Exception ('Fichier ' . $file . ' introuvable');
 		}
 	}
 }

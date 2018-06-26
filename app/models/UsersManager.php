@@ -2,8 +2,8 @@
 
 namespace Laurent\App\Models;
 
-require_once 'app/models/Users.php';
-require_once 'app/models/Model.php';
+use Laurent\App\Models\Model;
+use Laurent\App\Models\Users;
 
 
 class UsersManager extends Model

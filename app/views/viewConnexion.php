@@ -1,9 +1,9 @@
 <?php
+use Laurent\App\Service\Flash;
 $this->_t = 'Connexion';
-use Laurent\App\Session;
 
-SESSION::flash();
-SESSION::cookieFlash('deco', 'success');
+FLASH::flash();
+FLASH::cookieFlash('deco', 'success');
 ?>
 <form action="connexion" method="post" >
   <div class="form-group">
