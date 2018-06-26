@@ -8,7 +8,7 @@ use \Laurent\App\Models\Comments;
 use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
-use \Laurent\App\Session;
+use Laurent\App\Service\Flash;
 
 class ControllerArticle
 {
@@ -29,18 +29,62 @@ class ControllerArticle
 		$this->_usersManager = new UsersManager($_db);
     }
 
+/////////////////////////////////////////////////////////////
+/////////////////LISTE DES ARTCILES//////////////////////////
+/////////////////////////////////////////////////////////////
     public function getAllPosts()
-    {
-    	$GLOBALS['posts'] = $this->_postsManager->getList(0, 5);
-    	$this->renderViewArticles();
-		// $this->_view = new View('Articles');			
-		// $this->_view->generate(array('posts' => $posts));
-		// $this->verifyConnectUser();
-		// exit();			
-    }    
-
-    public function getUniquePost()
     {    	
+    	$GLOBALS['posts'] = $this->_postsManager->getList(0, 25);
+    	$this->renderViewArticles();
+
+    	if(isset($_SESSION['auth']) && $_SESSION['rank'] == 2)
+    	{
+    		$this->addPost();
+    	}
+    exit();
+    }
+
+    public function addPost()
+    {    	
+    	if(isset($_POST['post_submit']))
+		{				
+			$author = isset($_POST['post_author']) ? htmlspecialchars($_POST['post_author']) : false;
+			$title = isset($_POST['post_title']) ? htmlspecialchars($_POST['post_title']) : false;
+			$chapo = isset($_POST['post_chapo']) ? htmlspecialchars($_POST['post_chapo']) : false;
+			$content = isset($_POST['post_content']) ? htmlspecialchars($_POST['post_content']) : false;
+		    	    		
+			if(!empty($author) && !empty($title) && !empty($chapo) && !empty($content))
+			{
+				$this->_post = new Posts
+				([
+					'author' =>$author,
+					'title' =>$title,
+					'chapo' =>$chapo,
+					'content' => $content,
+					'addDate' => new \DateTime()
+				]);
+
+				$this->_postsManager->add($this->_post);
+	
+				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre nouvel article a bien été envoyé.', 'success');
+				header('Refresh:0');
+				exit();
+			}	
+			else
+			{
+				FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
+				header('Refresh:0');
+				exit();
+			}
+	    }   
+	}    	
+
+/////////////////////////////////////////////////////////////
+///////////////////////////ARTCILE UNIQUE////////////////////
+/////////////////////////////////////////////////////////////
+
+	public function getUniquePost()
+    {
 	    $post_id = htmlspecialchars($_GET['post_id']);
 	    $onePost = $this->_postsManager->getUnique($post_id);
 
@@ -52,17 +96,19 @@ class ControllerArticle
 
 				$this->addComment();
 
+				$this->buttons();
+
 				if(!headers_sent())
 				{
 					$this->_view = new View('Article');	
-					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments));
+					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments, 'buttonUpdate' => $buttonUpdate, 'buttonDelete' => $buttonDelete));
 					exit();			
 				}
 			}
 		}
 		else
 		{
-			SESSION::setFlash('L\'article demandé est inexistant!');
+			FLASH::setFlash('L\'article demandé est inexistant!');
 			header('Location: articles');
 			exit();
 		}
@@ -85,18 +131,54 @@ class ControllerArticle
 
 				$this->_commentsManager->add($this->_comment);
 
-				SESSION::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
+				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
 				header('Refresh:0, url=article&post_id=' . $post_id);
 				exit();
 			}
 			elseif(empty($_POST['com_content']) && isset($_POST['com_submit']))
 			{
-				SESSION::setFlash('Veuillez remplir le champs "commentaire" correctement.');
+				FLASH::setFlash('Veuillez remplir le champs "commentaire" correctement.');
 				header('Location: article&post_id=' . $post_id);
 				exit();
 			}
 		}
-	}	
+	}
+
+/////////////////////////////////////////////////////////////
+///////////////////////////BOUTONS///////////////////////////
+/////////////////////////////////////////////////////////////
+
+// $GLOBALS['post_id'] = $this->_post->id();
+
+public function boutton_del($refDel)
+{
+  if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
+  {
+    $boutton_delete = '<a href="article&post_id=' . $GLOBALS['post_id'] . '&comment_delete=' . $refDel . '"> | <button type="submit" class="btn btn-danger">Supprimer</button></a>';
+  }
+  else
+  {
+    $boutton_delete = '';
+  }
+  return $boutton_delete;
+}
+
+public function boutton_update($refUpdate)
+{
+  if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
+  {
+    $boutton_update = '<a href="article&post_id=' . $GLOBALS['post_id'] . '&comment_update=' . $refUpdate . '#update_com_form"><button type="submit" class="btn btn-info">Modifier</button></a>';
+  }
+  else
+  {
+    $boutton_update = '';
+  }
+  return $boutton_update;
+}
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 	public function renderViewArticles()
 	{		
@@ -145,21 +227,21 @@ class ControllerArticle
 		// 				$this->_commentsManager->add($this->_comment);
 
 		// 				//Affichage du message cookie flash
-		// 				SESSION::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
+		// 				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
 						
 		// 				header('Refresh:0, url=article&post_id=' . $post_id);
 		// 				exit();
 		// 			}
 		// 			else
 		// 			{
-		// 				SESSION::setFlash('Le mot de passe et l\'adresse email ne correspondent pas!');
+		// 				FLASH::setFlash('Le mot de passe et l\'adresse email ne correspondent pas!');
 		// 				header('Refresh:0, url=article&post_id=' . $post_id);
 		// 				exit();
 		// 			}
 		// 		}
 		// 		else
 		// 		{
-		// 			SESSION::setFlash('Veuillez remplir tous les champs correctement !');
+		// 			FLASH::setFlash('Veuillez remplir tous les champs correctement !');
 		// 			header('Refresh:0, url=article&post_id=' . $post_id);
 		// 			exit();
 		// 		}
@@ -178,7 +260,7 @@ class ControllerArticle
 		// 					]);	
 		// 				$this->_commentsManager->delete($this->_comment);
 		// 				//Affichage du message cookie flash
-		// 				SESSION::setFlash('Le commentaire a bien été supprimé.', 'success');
+		// 				FLASH::setFlash('Le commentaire a bien été supprimé.', 'success');
 
 		// 				header('Refresh:0, url=article&post_id=' . $post_id);
 		// 				exit();
@@ -198,13 +280,13 @@ class ControllerArticle
 		// 					]);	
 		// 					$this->_commentsManager->update($this->_comment);
 
-		// 					SESSION::setFlash('Le commentaire a bien été mis jour.', 'success');
+		// 					FLASH::setFlash('Le commentaire a bien été mis jour.', 'success');
 		// 					header('Refresh:0, url=article&post_id=' . $post_id);
 		// 					exit();
 		// 				}
 		// 				elseif(!$commentUpdate)
 		// 				{
-		// 					Session::setFlash('Le commentaire demandé est inexistant !');
+		// 					FLASH::setFlash('Le commentaire demandé est inexistant !');
 	 //            			header('Location:articles');
 	 //            			exit();
 		// 				}

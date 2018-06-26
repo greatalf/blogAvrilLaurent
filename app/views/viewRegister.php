@@ -1,8 +1,8 @@
 <?php
-use Laurent\App\Session;
+use Laurent\App\Service\Flash;
 $this->_t = 'Inscription';
-SESSION::flash();
-Session::cookieFlash('denied');
+FLASH::flash();
+FLASH::cookieFlash('denied');
 ?>
 <form action="" method="post" >
 	<div class="form-group">

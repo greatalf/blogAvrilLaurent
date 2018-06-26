@@ -1,9 +1,8 @@
 <?php
-use Laurent\App\Session;
-
-SESSION::flash();
-
+use Laurent\App\Service\Flash;
 $this->_t = 'Article';
+FLASH::flash();
+
 foreach ($onePost as $post) : ?>
 <div class="post_general">
 	<h3 style="color: #FFFFFF;"><?= $post->title() ?></h3>

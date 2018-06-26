@@ -1,8 +1,8 @@
 <?php
 namespace Laurent\App\Models;
 
-require_once 'app/models/Comments.php';
-require_once 'app/models/Model.php';
+use Laurent\App\Models\Model;
+use Laurent\App\Models\Comments;
 
 class CommentsManager extends Model
 {

@@ -1,7 +1,5 @@
 <?php
-use Laurent\App\Session;
-// session_start();
-// $this->_t = 'Mon blog';
+use Laurent\App\Service\Flash;
 ?>
     <header>
         <div id="my_picture" class="container">
@@ -9,7 +7,7 @@ use Laurent\App\Session;
                 <div class="col-lg-12">
                  	<img class="img-responsive" src="app/public/Bootstrap/img/profile.png" alt="Developpeur web">
                         <div class="intro-text">
-                            <?php Session::cookieFlash('deco', 'success'); ?>
+                            <?php FLASH::cookieFlash('deco', 'success'); ?>
                             <span class="name">Laurent AVRIL</span>
                             <hr class="star-light">
                             <span class="skills">Developper web - A. Laurent, parce qu'il vous le rend...</span>
@@ -95,7 +93,7 @@ use Laurent\App\Session;
                 <div class="col-lg-12 text-center">
                     <h2>Contactez-moi</h2>
                     <hr class="star-primary">
-                    <?php SESSION::flash(); ?>
+                    <?php FLASH::flash(); ?>
                 </div>
             </div>
             <div class="row">

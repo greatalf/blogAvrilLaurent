@@ -1,8 +1,7 @@
 <?php
-use Laurent\App\Session;
-
+use Laurent\App\Service\Flash;
 $this->_t = 'Espace perso';
-SESSION::flash();
+FLASH::flash();
 ?>
 
 <div>
@@ -53,6 +52,8 @@ SESSION::flash();
   </div>
   <button type="submit" name="profil_modify" class="btn btn-primary">Mettre à jour</button>
 
+ <?php if($_SESSION['rank'] == 2) : ?>
+
 <h3>Articles : </h3>
 	<?php if(isset($postList)) : ?>		
 <div>
@@ -82,9 +83,10 @@ SESSION::flash();
 	</table>
 </div>
 
+<?php endif; ?>
+
 <?php if(isset($allUsers)) : ?>
 <div>
-	<?php endif; ?>
 
 <br>
 <br>
@@ -105,4 +107,5 @@ SESSION::flash();
 		<?php endforeach; ?>	
 		</table>
 </div>
+<?php endif; ?>
 <?php endif; ?>

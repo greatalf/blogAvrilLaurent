@@ -1,10 +1,8 @@
 <?php
 namespace Laurent\App\Models;
 
+use Laurent\App\Models\Model;
 use Laurent\App\Models\Posts;
-
-require_once 'app/models/Posts.php';
-require_once 'app/models/Model.php';
 
 class PostsManager extends Model
 {
@@ -29,13 +27,14 @@ class PostsManager extends Model
      */
 	public function add(Posts $posts)
 	{
+		$author = htmlspecialchars($_POST['post_author']);
 		$title = htmlspecialchars($_POST['post_title']);
 		$chapo = htmlspecialchars($_POST['post_chapo']);
 		$content = htmlspecialchars($_POST['post_content']);
 
 		$request = $this->_db->prepare('INSERT INTO posts(author, title, chapo, content, addDate, updateDate) VALUES(:author, :title, :chapo, :content, NOW(), NULL)');
 
-		$request->bindValue(':author', $posts->author());
+		$request->bindValue(':author', $author);
 		$request->bindValue(':title', $title);
 		$request->bindValue(':chapo', $chapo);
 		$request->bindValue(':content', $content);
