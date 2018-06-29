@@ -8,26 +8,10 @@ use \Laurent\App\Models\Comments;
 use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
-use Laurent\App\Service\Flash;
+use \Laurent\App\Service\Flash;
 
-class ControllerArticle
+class ControllerArticle extends ControllerMain
 {
-	private $_comment;
-	private	$_post;
-	private	$_view;
-	private $_db;
-	private $_postsManager;
-    private $_usersManager;
-    private $_commentsManager;
-
-	public function __construct()
-	{ 	
-		$_db = (new Model())->dbConnect();
-		$this->_db = $_db;
-		$this->_postsManager = new PostsManager($_db);
-		$this->_commentsManager = new CommentsManager($_db);
-		$this->_usersManager = new UsersManager($_db);
-    }
 
 /////////////////////////////////////////////////////////////
 /////////////////LISTE DES ARTCILES//////////////////////////
@@ -70,12 +54,10 @@ class ControllerArticle
 				header('Refresh:0');
 				exit();
 			}	
-			else
-			{
-				FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
-				header('Refresh:0');
-				exit();
-			}
+			FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
+			header('Refresh:2, url=articles');
+			exit();
+
 	    }   
 	}    	
 
@@ -101,7 +83,7 @@ class ControllerArticle
 				if(!headers_sent())
 				{
 					$this->_view = new View('Article');	
-					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments, 'buttonUpdate' => $buttonUpdate, 'buttonDelete' => $buttonDelete));
+					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments/*, 'buttonUpdate' => $buttonUpdate, 'buttonDelete' => $buttonDelete*/));
 					exit();			
 				}
 			}
@@ -150,30 +132,30 @@ class ControllerArticle
 
 // $GLOBALS['post_id'] = $this->_post->id();
 
-public function boutton_del($refDel)
+public function buttons()
 {
   if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
   {
-    $boutton_delete = '<a href="article&post_id=' . $GLOBALS['post_id'] . '&comment_delete=' . $refDel . '"> | <button type="submit" class="btn btn-danger">Supprimer</button></a>';
+    // $boutton_delete = '<a href="articles&postDelete=' . $GLOBALS['post_id'] . '&comment_delete=' . $refDel . '"> | <button type="submit" class="btn btn-danger">Supprimer</button></a>';
   }
   else
   {
     $boutton_delete = '';
   }
-  return $boutton_delete;
-}
+  // return $boutton_delete;
 
-public function boutton_update($refUpdate)
-{
+
+
+
   if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
   {
-    $boutton_update = '<a href="article&post_id=' . $GLOBALS['post_id'] . '&comment_update=' . $refUpdate . '#update_com_form"><button type="submit" class="btn btn-info">Modifier</button></a>';
+    // $boutton_update = '<a href="article&post_id=' . $GLOBALS['post_id'] . '&comment_update=' . $refUpdate . '#update_com_form"><button type="submit" class="btn btn-info">Modifier</button></a>';
   }
   else
   {
     $boutton_update = '';
   }
-  return $boutton_update;
+  // return $boutton_update;
 }
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////

@@ -10,24 +10,22 @@ use \Laurent\App\Views\View;
 use Laurent\App\Service\Mail;
 use Laurent\App\Service\Flash;
 
-class ControllerUser
+class ControllerUser extends ControllerMain
 {
-	private $_view,
-			$_user,
-			$_usersManager;
-
 	public function __construct()
 	{ 	
-		$_db = (new Model())->dbConnect();
-		$this->_postsManager = new PostsManager($_db);
-		$this->_commentsManager = new CommentsManager($_db);
-		$this->_usersManager = new UsersManager($_db);
-
+		parent::__construct();
 		$this->_mail = new Mail();
 	}
 
 	public function deconnexion()
 	{	
+		if(!isset($_SESSION['auth']))
+		{
+			setcookie("deco", $deco = 'Vous êtes déjà déconnecté......', time()+(2));
+			header('Location:connexion');
+			exit();
+		}
 		setcookie("deco", $deco = 'Vous avez bien été déconnecté.', time()+(2));
 		session_destroy();
 		header('Location:connexion');
@@ -52,6 +50,8 @@ class ControllerUser
 					$_SESSION['username'] = $user->username();
 					$_SESSION['password'] = $user->password();
 					$_SESSION['rank'] = $user->rank();
+
+					$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));
 
 					FLASH::setFlash('Bienvenue, '.$_SESSION['username'].' !', 'success');
 					header('Location: articles');
