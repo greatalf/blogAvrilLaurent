@@ -9,20 +9,8 @@ use \Laurent\App\Models\Model;
 use Laurent\App\Views\View;
 use Laurent\App\Service\Flash;
 
-class ControllerApp
+class ControllerApp extends ControllerMain
 {
-	private $_view,
-			$_user,
-			$_usersManager;
-
-	public function __construct()
-	{ 	
-		$_db = (new Model())->dbConnect();
-		$this->_postsManager = new PostsManager($_db);
-		$this->_commentsManager = new CommentsManager($_db);
-		$this->_usersManager = new UsersManager($_db);
-	}
-
 	public function home()
 	{	
 		$this->_view = new View('Accueil');

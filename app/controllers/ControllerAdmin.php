@@ -2,6 +2,7 @@
 namespace Laurent\App\Controllers;
 
 use \Laurent\App\Models\PostsManager;
+use \Laurent\App\Models\Posts;
 use \Laurent\App\Models\CommentsManager;
 use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
@@ -9,46 +10,19 @@ use \Laurent\App\Controllers\ControllerArticle;
 use Laurent\App\Views\View;
 use Laurent\App\Service\Flash;
 
-class ControllerAdmin
+class ControllerAdmin extends ControllerMain
 {
-	private $_view,
-			$_post,
-			$_user;
-
-	public function __construct()
-	{ 	
-		$_db = (new Model())->dbConnect();
-		$this->_postsManager = new PostsManager($_db);
-		$this->_commentsManager = new CommentsManager($_db);
-		$this->_usersManager = new UsersManager($_db);
-		$this->_controllerArticle = new ControllerArticle();
-	}
-
-
 	public function admin()
     {
-    	if(isset($_SESSION['auth']))
+    	if(!isset($_SESSION['auth']))
     	{
-    		if(isset($_SESSION['rank']) && $_SESSION['rank'] == 1)
-	    	{
-	    		
-	    	}
-    		
-    		if(isset($_SESSION['rank']) && $_SESSION['rank'] == 2)
-	    	{
-	    		$this->writeAPost();
-	    	}	    	
+    		FLASH::setFlash('Une connexion est requise pour accéder à l\'espace d\'administration!');
+			header('Location: connexion');
+			exit();    	
+		}
 		$this->renderViewAdmin();			
 		exit();
-		}
-		else
-		{
-			FLASH::setFlash('Une connexion est requise pour accéder à l\'espace d\'administration!');
-			header('Location: connexion');
-			exit();
-		}
-    }
-    
+    }    
 
     public function writeAPost()
     {
@@ -59,27 +33,24 @@ class ControllerAdmin
 			$chapo = isset($_POST['post_chapo']) ? htmlspecialchars($_POST['post_chapo']) : '';
 			$content = isset($_POST['post_content']) ? htmlspecialchars($_POST['post_content']) : '';
 		    	    		
-			if(!empty($author) && !empty($title) && !empty($chapo) && !empty($content))
-			{
-				$this->addAPost();
-			}	
-			else
+			if(empty($author) && empty($title) && empty($chapo) && empty($content))
 			{
 				FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
 				header('Location: articles');
 				exit();
-			}
+			}	
+			$this->postAdd();			
 	    }
 	}    	
 
-    public function addAPost()
+    public function postAdd()
     {    
-		$this->_post = new Posts
+    	$this->_post = new Posts
 			([
-				'author' => $_POST['post_author'],
-				'title' => $_POST['post_title'],
-				'chapo' => $_POST['post_chapo'],
-				'content' => $_POST['post_content'],
+				'author' => htmlspecialchars($_POST['post_author']),
+				'title' => htmlspecialchars($_POST['post_title']),
+				'chapo' => htmlspecialchars($_POST['post_chapo']),
+				'content' => htmlspecialchars($_POST['post_content']),
 				'addDate' => new \DateTime()
 			]);
 
@@ -90,24 +61,39 @@ class ControllerAdmin
 		exit();
 	}	
 
-    // public function getUserInfos()
-    // {
-    // 	$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
-    // 	$allUsers = $this->_usersManager->getUsersList();
-    // 	$manager = $this->_postsManager->getList(0,25);
-    // }
-
     public function renderViewAdmin()
 	{		
 		$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
     	$allUsers = $this->_usersManager->getUsersList();
     	$postList = $this->_postsManager->getList(0,25);
+    	
+    	// if(isset($_GET['postDelete']))
+    	// {$post = $this->_postsManager->getUnique($_GET['postDelete']);}
 
 		if(!headers_sent())
 		{						
 				$this->_view = new View('admin');		
-				// $this->_view->generate(NULL);
 				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers));		
+		}
+	}
+
+	public function postDelete()
+	{
+		//au clik sur supprimer dans le viewAdmin, le href de s'appelle pas et c'est la page admin qui se rafraîchit au lieu que ce soit le die juste en dessous qui s'opère...
+		if(isset($_GET['postdelete']))
+		{	
+			$post = $this->_postsManager->getUnique($_GET['postdelete']);
+
+			$this->_post = new Posts
+			([
+				'id' => $_GET['postdelete']
+			]);
+
+			$this->_postsManager->delete($this->_post);
+
+			FLASH::setFlash('L\'article a bien été supprimé', 'success');
+			header('Location: admin');
+			exit();
 		}
 	}
 	// public function admin()
