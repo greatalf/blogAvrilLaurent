@@ -8,6 +8,7 @@ use \Laurent\App\Models\Users;
 use \Laurent\App\Models\Model;
 use Laurent\App\Views\View;
 use Laurent\App\Service\Flash;
+use Laurent\App\Service\Security;
 
 class ControllerApp extends ControllerMain
 {

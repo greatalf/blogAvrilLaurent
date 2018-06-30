@@ -9,6 +9,7 @@ use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
 use \Laurent\App\Service\Flash;
+use \Laurent\App\Service\Security;
 
 class ControllerArticle extends ControllerMain
 {
@@ -39,6 +40,8 @@ class ControllerArticle extends ControllerMain
 		    	    		
 			if(!empty($author) && !empty($title) && !empty($chapo) && !empty($content))
 			{
+				$this->_security->securizationCsrf();
+
 				$this->_post = new Posts
 				([
 					'author' =>$author,
@@ -104,6 +107,8 @@ class ControllerArticle extends ControllerMain
 		{
 			if(!empty($_POST['com_content']) && isset($_POST['com_submit']))
 			{
+				$this->_security->securizationCsrf();
+
 				$this->_comment = new Comments
 					([
 						'author' => $_SESSION['username'],
