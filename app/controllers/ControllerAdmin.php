@@ -9,6 +9,7 @@ use \Laurent\App\Models\Model;
 use \Laurent\App\Controllers\ControllerArticle;
 use Laurent\App\Views\View;
 use Laurent\App\Service\Flash;
+use Laurent\App\Service\Security;
 
 class ControllerAdmin extends ControllerMain
 {
@@ -45,7 +46,9 @@ class ControllerAdmin extends ControllerMain
 
     public function postAdd()
     {    
-    	$this->_post = new Posts
+    	$this->_security->securizationCsrf();
+
+		$this->_post = new Posts
 			([
 				'author' => htmlspecialchars($_POST['post_author']),
 				'title' => htmlspecialchars($_POST['post_title']),
@@ -83,6 +86,8 @@ class ControllerAdmin extends ControllerMain
 		if(isset($_GET['postdelete']))
 		{	
 			$post = $this->_postsManager->getUnique($_GET['postdelete']);
+
+			$this->_security->securizationCsrf();
 
 			$this->_post = new Posts
 			([

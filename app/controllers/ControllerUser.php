@@ -9,6 +9,7 @@ use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
 use Laurent\App\Service\Mail;
 use Laurent\App\Service\Flash;
+use Laurent\App\Service\Security;
 
 class ControllerUser extends ControllerMain
 {
@@ -64,64 +65,6 @@ class ControllerUser extends ControllerMain
 	exit();
 	}
 
-	public function register()
-	{	
-		// $this->_view = new View('Register');
-		// $this->_view->generate(NULL);
-		$lastname = isset($_POST['regist_lastname']) ? htmlspecialchars($_POST['regist_lastname']) : '';
-		$firstname = isset($_POST['regist_firstname']) ? htmlspecialchars($_POST['regist_firstname']) : '';
-		$email = isset($_POST['regist_email']) ? htmlspecialchars($_POST['regist_email']) : '';
-		$username = isset($_POST['regist_username']) ? htmlspecialchars($_POST['regist_username']) : '';
-		$password = isset($_POST['regist_password']) ? htmlspecialchars($_POST['regist_password']) : '';
-		$confirmPassword = isset($_POST['regist_password_confirm']) ? htmlspecialchars($_POST['regist_password_confirm']) : '';
-			
-		if(isset($_POST['regist_submit']))
-		{
-			if(!empty($lastname) &&
-				!empty($firstname) && 
-				!empty($email) && 
-				!empty($username) && 
-				!empty($password) && 
-				!empty($confirmPassword))
-			{	
-				if($password != $confirmPassword)
-				{
-					FLASH::setFlash('Le mot de passe et la confirmation de mot de passe ne correspondent pas!');
-					$this->_view = new View('Register');
-					$this->_view->generate(NULL);
-					exit();
-				}
-				else
-				{
-					//hydratation de l'user nouvellement inscrit
-					$this->_user = new Users
-					([
-						'lastname' => $_POST['regist_lastname'],
-						'firstname' => $_POST['regist_firstname'], 
-						'email' => $_POST['regist_email'], 
-						'username' => $_POST['regist_username'], 
-						'password' => $_POST['regist_password'], 
-						'timeToDelete' => time()
-					]);
-
-					$this->checkUniqueEmailAndPseudo();
-
-					$this->addUser();
-				}
-			}
-			else
-			{
-				FLASH::setFlash('Remplissez tous les champs correctement !');
-				$this->_view = new View('Register');
-				$this->_view->generate(NULL);
-				exit();
-			}
-		}
-		$this->_view = new View('Register');
-		$this->_view->generate(NULL);
-		exit();
-	}
-
 	public function checkUniqueEmailAndPseudo()
 	{
 		unset($countEmail);
@@ -134,15 +77,15 @@ class ControllerUser extends ControllerMain
 					exit();
 				}
 
-				unset($countPseudo);
-				$countPseudo = $this->_usersManager->checkPseudo();
-				if($countPseudo > 0)
-				{
-					FLASH::setFlash('Ce pseudo est déjà utilisé.');
-					$this->_view = new View('Register');
-					$this->_view->generate(NULL);
-					exit();
-				}
+			unset($countPseudo);
+			$countPseudo = $this->_usersManager->checkPseudo();
+			if($countPseudo > 0)
+			{
+				FLASH::setFlash('Ce pseudo est déjà utilisé.');
+				$this->_view = new View('Register');
+				$this->_view->generate(NULL);
+				exit();
+			}
 	}
 
 	public function addUser()

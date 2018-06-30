@@ -9,6 +9,7 @@ use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
 use \Laurent\App\Service\Mail;
 use \Laurent\App\Session;
+use \Laurent\App\Service\Security;
 
 
 class ControllerMain
