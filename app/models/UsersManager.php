@@ -63,7 +63,7 @@ class UsersManager extends Model
      */
 	public function delete(Users $users)
 	{
-		$this->_db->exec('DELETE FROM users WHERE id = '.(int) $users->id());
+		$req = $this->_db->exec('DELETE FROM users WHERE id = '.(int) $users->id());
 	}
 
     /**
@@ -88,16 +88,15 @@ class UsersManager extends Model
      * @see UsersManager::update()
      * @param Users $users
      */
-	protected function update(Users $users)
+	public function update(Users $users)
 	{
-		$request = $this->_db->prepare('UPDATE users SET lastname = :lastname, firstname = :firstname, email = :email, username = :username, password = :password, rank = :rank WHERE id = :id');
+		$request = $this->_db->prepare('UPDATE users SET lastname = :lastname, firstname = :firstname, email = :email, username = :username, password = :password WHERE id = :id');
 
 		$request->bindValue(':lastname', $users->lastname());
 		$request->bindValue(':firstname', $users->firstname());
 		$request->bindValue(':email', $users->email());
 		$request->bindValue(':username', $users->username());
 		$request->bindValue(':password', $users->password());
-		$request->bindValue(':rank', $users->rank());
 		$request->bindValue(':id', $users->id(), \PDO::PARAM_INT);
 
 		$request->execute();
@@ -130,7 +129,6 @@ class UsersManager extends Model
 			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
 		$data = $request->fetch();
-
 		$userInfos = new Users($data);
 
 		return $userInfos;
@@ -143,17 +141,15 @@ class UsersManager extends Model
 		{
 			$connect_email = htmlspecialchars($_POST['connect_email']);
 			$connect_pass = htmlspecialchars($_POST['connect_pass']);
-			// $password = password_hash($_POST['connect_pass'], PASSWORD_BCRYPT);
+			// $password = password_hash($connect_pass, PASSWORD_BCRYPT);
 			// $pass_verif = password_verify($_POST['connect_pass'], );
 			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
 			$request->execute(array($connect_email, md5($connect_pass)));
 
-			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
-			while ($data = $request->fetch())
-			{
-				$user = new Users($data);
-			}
+			$data = $request->fetch();
+			$user = new Users($data);
 
 	        $request->closeCursor();
 	        return $user;
@@ -172,6 +168,16 @@ class UsersManager extends Model
 
 			return $countEmail;
 		}
+		if(isset($_POST['profil_email']))
+		{
+			$profil_email = htmlspecialchars($_POST['profil_email']);
+
+			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE email = ?');
+			$request->execute([$profil_email]);
+			$countEmail = $request->fetchColumn();
+
+			return $countEmail;
+		}
 	}
 
 		public function checkPseudo()
@@ -182,6 +188,16 @@ class UsersManager extends Model
 
 			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE username = ?');
 			$request->execute([$regist_username]);
+			$countPseudo = $request->fetchColumn();
+
+			return $countPseudo;
+		}
+		if(isset($_POST['profil_username']))
+		{
+			$profil_username = htmlspecialchars($_POST['profil_username']);
+
+			$request = $this->_db->prepare('SELECT count(*) FROM users WHERE username = ?');
+			$request->execute([$profil_username]);
 			$countPseudo = $request->fetchColumn();
 
 			return $countPseudo;
@@ -238,5 +254,17 @@ class UsersManager extends Model
 		{			
 			$this->_db->exec('DELETE FROM users WHERE timeToDelete < ' . $timeToErase);
 		}
+	}
+
+	public function upgradeUser(Users $users)
+	{
+		$request = $this->_db->prepare('UPDATE users SET rank = :rank WHERE id = :id');
+
+		$request->bindValue(':id', $users->id(), \PDO::PARAM_INT);
+		$request->bindValue(':rank', 2);
+
+		// var_dump($users->id()); die();
+
+		$request->execute();
 	}
 }

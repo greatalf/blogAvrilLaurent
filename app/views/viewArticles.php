@@ -16,44 +16,10 @@ foreach($posts as $post) :
 <br>
 <br>
 <br>
-<?php
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////Mettre ça dans une classe //////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-function boutton_del($refDel)
-{
-  if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
-  {
-    $boutton_delete = '<a href="articles&post_delete=' . $refDel . '"> | <button type="submit" class="btn btn-danger">Supprimer</button></a>';
-  }else
-  {
-    $boutton_delete = '';
-  }
-  return $boutton_delete;
-}
-
-function boutton_update($refUpdate)
-{
-  if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
-  {
-    $boutton_update = '<a href="articles&post_update=' . $refUpdate . '#update_post_form"><button type="submit" class="btn btn-info">Modifier</button></a>';
-  }else
-  {
-    $boutton_update = '';
-  }
-  return $boutton_update;
-}
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-?>
-
-
 
 <?php if(isset($_SESSION['rank']) && $_SESSION['rank'] == 2) : ?>
 <hr>
-<h4 id="update_post_form">Écrivez un article : </h4>
+<h4 id="update_post_form"><?= isset($_GET['postUpdate']) ? 'Modifiez un article : ' : 'Écrivez un article : ' ?></h4>
 <br>
 
 <form action="" method="post" >
@@ -64,17 +30,17 @@ function boutton_update($refUpdate)
   </div>
   <div class="form-group">
     <label for="post_title">Titre</label>
-    <input type="text" name="post_title" value="<?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->title())) : ''?>" class="form-control" id="post_title" placeholder="Le titre" <?= isset($_GET['post_update']) ? 'autofocus' : '' ?>>
+    <input type="text" name="post_title" value="<?= isset($_GET['postUpdate']) ? str_replace('<br />', '', ($updatePost->title())) : ''?>" class="form-control" id="post_title" placeholder="Le titre" <?= isset($_GET['postUpdate']) ? 'autofocus' : '' ?>>
   </div>
     <div class="form-group">
     <label for="post_chapo">Chapô</label>
-    <input type="text" name="post_chapo" value="<?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->chapo())) : ''?>" class="form-control" id="post_chapo" placeholder="Le chapô">
+    <input type="text" name="post_chapo" value="<?= isset($_GET['postUpdate']) ? str_replace('<br />', '', ($updatePost->chapo())) : ''?>" class="form-control" id="post_chapo" placeholder="Le chapô">
   </div>
   <div class="form-group">
-    <label for="post">Article</label>
-    <textarea class="form-control" name="post_content" id="post" rows="4" placeholder="Votre article..."><?= isset($_GET['post_update']) ? str_replace('<br />', '', ($updatePost->content())) : ''?></textarea>
+    <label for="post_content">Article</label>
+    <textarea class="form-control" name="post_content" id="post" rows="4" id="post_content" placeholder="Votre article..."><?= isset($_GET['postUpdate']) ? str_replace('<br />', '', ($updatePost->content())) : ''?></textarea>
   </div>
-  <button type="submit" name="<?= isset($_GET['post_update']) ? 'post_update' : 'post_submit'?>" class="btn btn-primary"><?= isset($_GET['post_update']) ? 'Valider la modification' : 'Envoyer'?></button>
+  <button type="submit" name="<?= isset($_GET['postUpdate']) ? 'post_update' : 'post_submit'?>" class="btn btn-primary"><?= isset($_GET['postUpdate']) ? 'Valider la modification' : 'Envoyer'?></button>
 </form>
 <hr>
 <?php endif; ?>
