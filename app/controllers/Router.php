@@ -18,8 +18,8 @@ class Router
 	{
 		$this->controllerApp = new ControllerApp();
 		$this->controllerArticle = new ControllerArticle();
-		$this->controllerUser = new controllerUser();
-		$this->controllerAdmin = new controllerAdmin();
+		$this->controllerUser = new ControllerUser();
+		$this->controllerAdmin = new ControllerAdmin();
 		$this->error = new Error404();
 	}
 
@@ -68,7 +68,41 @@ class Router
 			        elseif($url[0] === 'admin')
 			        {
 			            $this->controllerAdmin->admin();
+
 			        }
+			    	elseif($url[0] === 'postdelete')
+			    	{		
+						$this->controllerAdmin->postDelete();
+			    	}
+			    	elseif($url[0] === 'postupdate')
+			    	{		
+						$this->controllerAdmin->postUpdate();
+			    	}
+			    	elseif($url[0] === 'commentupdate')
+			    	{		
+						$this->controllerArticle->commentUpdate();
+			    	}
+			    	elseif($url[0] === 'commentdelete')
+			    	{		
+						$this->controllerArticle->commentDelete();
+			    	}
+			    	elseif($url[0] === 'commentvalidate')
+			    	{		
+						$this->controllerAdmin->commentValidate();
+			    	}
+			    	elseif($url[0] === 'commentnovalidate')
+			    	{		
+						$this->controllerAdmin->commentNoValidate();
+			    	}
+			    	elseif($url[0] === 'userbanish')
+			    	{		
+						$this->controllerAdmin->userBanish();
+			    	}
+			    	elseif($url[0] === 'upgradeuser')
+			    	{		
+						$this->controllerAdmin->upgradeUser();
+			    	}
+
 		  		}
 		  	$this->error->errorPage();	
 		  	}	

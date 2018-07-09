@@ -94,7 +94,7 @@
     </nav>
 
     <!-- Article Section -->    
-    <section id="articles" class="success"><!-- class="success" -->
+    <section id="articles"><!-- class="success" -->
         <div class="container">
             <h1 class="text-center"><?= $t ?></h1>
             <div class="row">
@@ -112,7 +112,7 @@
                 <div class="row">
                     <div class="footer-col col-md-4">
                         <?php if(isset($_SESSION['auth'])): ?>
-                            <h3><a href="http://localhost/Blog_Avril_Laurent/admin">>Mon espace perso<</a></h3>
+                            <h3><a href="http://localhost/Blog_Avril_Laurent/admin">>Espace administration<</a></h3>
                         <?php endif; ?>
                         <h3>Localisation</h3>
                         <p>241, Boulevard Sénardière

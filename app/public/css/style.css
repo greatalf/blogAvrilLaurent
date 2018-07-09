@@ -1,7 +1,7 @@
 body
 {
-  margin-top: 120px;
-  overflow: auto;
+  margin-top: 150px;
+  /*overflow: auto;*/
 }
 
 .navig
@@ -31,7 +31,7 @@ body
 
 #post_h1_title
 {
-	color: #FFFFFF;
+	color: #18BC9C;
 }
 
 #adminLink:hover
@@ -66,9 +66,9 @@ body
 	padding-top: 15px;
 }
 
-/*a
+/*#alink
 {
-	color: white;
+	color: white !important;
 }*/
 
 /*td
