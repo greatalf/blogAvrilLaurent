@@ -1,5 +1,4 @@
 <?php
-
 namespace Laurent\App\Models;
 
 class Model
