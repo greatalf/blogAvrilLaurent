@@ -37,13 +37,22 @@ class ControllerUser extends ControllerMain
 
 	public function connexion()
 	{
+		if(isset($_SESSION['auth']))
+		{
+			FLASH::setFlash('Vous êtes déjà connecté ' . $_SESSION['username'] . '...', 'success');
+			header('Location: admin');
+			exit();
+		}
 		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
 		{
 			if(isset($_POST['connect_submit']))
-			{				
+			{
+				sleep(2);		
 				$user = $this->_usersManager->checkUser();
 				if($user->id() != NULL && !isset($_SESSION['auth']))
 				{
+					//defuse the bruteforce checking
+					$this->_usersManager->deleteIp($this->_security->getIp());
 					// Initialisation des datas
 					$_SESSION['auth'] = 1;
 					$_SESSION['id'] = $user->id();
@@ -62,15 +71,40 @@ class ControllerUser extends ControllerMain
 				}
 				else
 				{
-					FLASH::setFlash('L\'adresse email et le mot de passe ne correspondent pas!');
-					header('Location: connexion');
-					exit();
+					$this->isThereBruteForce(5/*nbAttempt*/, 45/*timeFreeze*/);
 				}
+				FLASH::setFlash('L\'adresse email et le mot de passe ne correspondent pas!');
+				header('Location: connexion');
+				exit();
 			}
-		}
+		}		
 	$this->_view = new View('connexion');
 	$this->_view->generate(NULL);
 	exit();
+	}
+
+	public function isThereBruteForce($nbAttempt, $timeFreeze)
+	{
+		$this->_usersManager->addIp($this->_security->getIp());
+
+		$bruteForceTest = $this->_usersManager->bruteForceTest($this->_security->getIp());
+
+		if($bruteForceTest >= $nbAttempt)
+		{
+			// $countDown = time()+(120);
+			FLASH::setFlash('Vous avez fait <strong>' . $nbAttempt . ' tentatives</strong> de connexion échouées!');
+
+			setcookie("BRUTEFORCE", $bruteForce = 'Réessayez ultérieurement.', time()+($timeFreeze));
+			while(isset($_COOKIE['BRUTEFORCE']))
+			{
+				header('Refresh:3, url=http://localhost/Blog_Avril_Laurent/connexion');
+				die('connexion bloquée, réessayez ultérieurement...');
+			}
+
+			$this->_usersManager->deleteIp($this->_security->getIp());
+			header('Location: connexion');
+			exit();
+		}
 	}
 
 	public function checkUniqueEmailAndPseudo()

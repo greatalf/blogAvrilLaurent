@@ -38,6 +38,7 @@ class Router
 
 					if(isset($url[1]))
 					{
+						var_dump($url[1]);
 						$this->error->errorPage();
 					}				
 

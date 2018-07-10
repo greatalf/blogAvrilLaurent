@@ -17,7 +17,5 @@ class ControllerApp extends ControllerMain
 		$this->_view = new View('Accueil');
 		$this->_view->generate(NULL);
 		exit();
-	}
-
-	
+	}	
 }
