@@ -267,4 +267,24 @@ class UsersManager extends Model
 
 		$request->execute();
 	}
+
+	public function addIp($ip)
+	{
+		$request = $this->_db->prepare('INSERT INTO connect (userIp) VALUES(?)')->execute(array($ip));
+	}
+
+	public function deleteIp($ip)
+	{
+		$this->_db->prepare('DELETE FROM connect WHERE userIp = ?')->execute(array($ip));
+	}
+
+	public function bruteForceTest($ip)
+    {
+
+    	//Erreur : SQLSTATE[42000]: Syntax error or access violation: 1064 Erreur de syntaxe près de '::1' à la ligne 1
+    	$request = $this->_db->prepare("SELECT * FROM connect WHERE userIp = ?");
+
+		$request->execute(array($ip));
+		return $request->rowCount();
+    }
 }
