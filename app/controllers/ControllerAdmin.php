@@ -191,7 +191,6 @@ class ControllerAdmin extends ControllerMain
 
 
 
-
 	// public function validationComments()
 	// {
 	// 	$validateList = $this->_commentManager->validateCommentList();
@@ -200,23 +199,6 @@ class ControllerAdmin extends ControllerMain
 	// 	// Mettre à 1 si le boutton validation est clické, donc que validationComments est détéctée dans l'url.
 	// 	$this->renderViewAdmin();
 	// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// public function admin()
 	// {

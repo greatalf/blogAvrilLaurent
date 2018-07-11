@@ -12,7 +12,7 @@ class Model
      */
     public function dbConnect()
     {
-        // $_db = new \PDO('mysql:host=cvktne7b4wbj4ks1.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;dbname=lzm2fynkwt6ncb8q;charset=utf8', 'kl865flmarnj0icr', 'itj5r5cgjuhc59jz');
+        //$_db = new \PDO('mysql:host=cvktne7b4wbj4ks1.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;dbname=lzm2fynkwt6ncb8q;charset=utf8', 'kl865flmarnj0icr', 'itj5r5cgjuhc59jz');
         $_db = new \PDO('mysql:host=localhost;dbname=my_blog;charset=utf8', 'root', '');
         $_db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         

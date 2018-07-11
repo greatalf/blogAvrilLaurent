@@ -8,7 +8,6 @@ use \Laurent\App\Models\Users;
 use \Laurent\App\Models\Model;
 use \Laurent\App\Views\View;
 use \Laurent\App\Service\Mail;
-use \Laurent\App\Session;
 use \Laurent\App\Service\Security;
 use \Laurent\App\Service\Profile;
 

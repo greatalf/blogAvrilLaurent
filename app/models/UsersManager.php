@@ -4,6 +4,7 @@ namespace Laurent\App\Models;
 
 use Laurent\App\Models\Model;
 use Laurent\App\Models\Users;
+use Laurent\App\Service\Security;
 
 
 class UsersManager extends Model
@@ -136,7 +137,6 @@ class UsersManager extends Model
 
 	public function checkUser()
 	{
-
 		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
 		{
 			$connect_email = htmlspecialchars($_POST['connect_email']);
@@ -146,7 +146,7 @@ class UsersManager extends Model
 			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
 			$request->execute(array($connect_email, md5($connect_pass)));
 
-			$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
 			$data = $request->fetch();
 			$user = new Users($data);
@@ -154,6 +154,18 @@ class UsersManager extends Model
 	        $request->closeCursor();
 	        return $user;
 		}
+	}
+
+	public function checkUserById()
+	{
+		$user_id = htmlspecialchars($_GET['user_id']);
+		$request = $this->_db->prepare('SELECT * FROM users WHERE id = ?');
+		$request->execute(array($user_id));
+		$data = $request->fetch();
+		$user = new Users($data);
+
+	    $request->closeCursor();
+	    return $user;
 	}
 
 	public function checkEmail()
@@ -209,10 +221,13 @@ class UsersManager extends Model
 		$user_id = htmlspecialchars($_GET['user_id']);
 		$token = htmlspecialchars($_GET['confirmation_token']);
 
-		$request = $this->_db->prepare('SELECT * FROM users WHERE id = ?');
-		$request->execute([$user_id]);
-		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');			
-		$user = $request->fetch();
+		$request = $this->_db->prepare('SELECT * FROM users WHERE id = ? AND confirmation_token = ?');
+		$request->execute([$user_id, $token]);
+
+		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+
+		$data = $request->fetch();
+		$user = new Users($data);
 
 		return $user;
 	}
@@ -222,6 +237,32 @@ class UsersManager extends Model
 		$user_id = htmlspecialchars($_GET['user_id']);
 
 		$request = $this->_db->prepare('UPDATE users SET confirmation_token = NULL, confirmedAt = NOW() WHERE id = ?')->execute([$user_id]);
+	}
+
+	public function makeConnexionOfUser()
+	{
+		$user = $this->checkUserById();
+		// var_dump($user); die();
+		if($user)
+		{			
+			if($user->id() != false && !isset($_SESSION['auth']))
+			{
+				$this->_security = new Security;
+				//defuse the bruteforce checking
+				$this->deleteIp($this->_security->getIp());
+				// Initialisation des datas
+				$_SESSION['auth'] = 1;
+				$_SESSION['id'] = $user->id();
+				$_SESSION['lastname'] = $user->lastname();
+				$_SESSION['firstname'] = $user->firstname();
+				$_SESSION['email'] = $user->email();
+				$_SESSION['username'] = $user->username();
+				$_SESSION['password'] = $user->password();
+				$_SESSION['rank'] = $user->rank();
+
+				$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));	
+			}
+		}
 	}
 
 	public function count()
@@ -280,8 +321,6 @@ class UsersManager extends Model
 
 	public function bruteForceTest($ip)
     {
-
-    	//Erreur : SQLSTATE[42000]: Syntax error or access violation: 1064 Erreur de syntaxe près de '::1' à la ligne 1
     	$request = $this->_db->prepare("SELECT * FROM connect WHERE userIp = ?");
 
 		$request->execute(array($ip));
