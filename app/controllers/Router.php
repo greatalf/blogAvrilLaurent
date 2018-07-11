@@ -42,68 +42,60 @@ class Router
 						$this->error->errorPage();
 					}				
 
-			        if($url[0] === 'articles')
-			        {
-			            $this->controllerArticle->getAllPosts();
-			        }
-			        elseif($url[0] === 'article')
-			        {
-			        	$this->controllerArticle->getUniquePost();
-			        }
-			        elseif($url[0] === 'deconnexion')
-			        {
-			            $this->controllerUser->deconnexion();
-			        }
-			        elseif($url[0] === 'connexion')
-			        {
-			            $this->controllerUser->connexion();
-			        }
-			        elseif($url[0] === 'register')
-			        {
-			            $this->controllerUser->register();
-			        }
-			        elseif($url[0] === 'accueil')
-			        {
-			            $this->controllerApp->home();
-			        }
-			        elseif($url[0] === 'admin')
-			        {
-			            $this->controllerAdmin->admin();
-
-			        }
-			    	elseif($url[0] === 'postdelete')
-			    	{		
-						$this->controllerAdmin->postDelete();
+					switch($url[0])
+					{	
+				        case 'articles':				        
+				            $this->controllerArticle->getAllPosts();
+				            break;				        
+				        case 'article':
+				        	$this->controllerArticle->getUniquePost();
+				        	break;				        
+				        case 'deconnexion':
+				            $this->controllerUser->deconnexion();
+				            break;				        
+				        case 'connexion':
+				            $this->controllerUser->connexion();
+				            break;				        
+				        case 'register':
+				            $this->controllerUser->register();
+				            break;				        
+				        case 'accueil':
+				            $this->controllerApp->home();
+				            break;				        
+				        case 'admin':
+				            $this->controllerAdmin->admin();
+				            break;				        
+				    	case 'postdelete':		
+							$this->controllerAdmin->postDelete();
+							break;				    	
+				    	case 'postupdate':		
+							$this->controllerAdmin->postUpdate();
+							break;				    	
+				    	case 'commentupdate':		
+							$this->controllerArticle->commentUpdate();
+							break;				    	
+				    	case 'commentdelete':		
+							$this->controllerArticle->commentDelete();
+							break;				    	
+				    	case 'commentvalidate':		
+							$this->controllerAdmin->commentValidate();
+							break;				    	
+				    	case 'commentnovalidate':		
+							$this->controllerAdmin->commentNoValidate();
+							break;				    	
+				    	case 'userbanish':		
+							$this->controllerAdmin->userBanish();
+							break;				    	
+				    	case 'upgradeuser':		
+							$this->controllerAdmin->upgradeUser();
+							break;	
+						case 'contact':
+							$this->controllerApp->contact();
+							break;
+						case 'confirm':
+							$this->controllerApp->confirm();
+							break;			    	
 			    	}
-			    	elseif($url[0] === 'postupdate')
-			    	{		
-						$this->controllerAdmin->postUpdate();
-			    	}
-			    	elseif($url[0] === 'commentupdate')
-			    	{		
-						$this->controllerArticle->commentUpdate();
-			    	}
-			    	elseif($url[0] === 'commentdelete')
-			    	{		
-						$this->controllerArticle->commentDelete();
-			    	}
-			    	elseif($url[0] === 'commentvalidate')
-			    	{		
-						$this->controllerAdmin->commentValidate();
-			    	}
-			    	elseif($url[0] === 'commentnovalidate')
-			    	{		
-						$this->controllerAdmin->commentNoValidate();
-			    	}
-			    	elseif($url[0] === 'userbanish')
-			    	{		
-						$this->controllerAdmin->userBanish();
-			    	}
-			    	elseif($url[0] === 'upgradeuser')
-			    	{		
-						$this->controllerAdmin->upgradeUser();
-			    	}
-
 		  		}
 		  	$this->error->errorPage();	
 		  	}	

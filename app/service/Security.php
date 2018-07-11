@@ -2,6 +2,8 @@
 namespace Laurent\App\Service;
 
 use Laurent\App\Service\Flash;
+use Laurent\App\Models\UsersManager;
+use Laurent\App\Models\Model;
 
 class Security
 {

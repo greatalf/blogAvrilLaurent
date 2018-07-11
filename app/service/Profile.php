@@ -35,10 +35,6 @@ class Profile
 
 	public function checkUniqueEmailAndPseudo()
 	{
-		// $_db = (new Model())->dbConnect();
-		// $this->_db = $_db;
-		// $this->_usersManager = new UsersManager($_db);
-
 		unset($countEmail);
 		$countEmail = $this->_usersManager->checkEmail();
 		if($countEmail > 0)
@@ -148,10 +144,10 @@ class Profile
 			}
 			$user = $this->_usersManager->update($this->_user);
 
-			// $this->_mail->sendMailUserUpdated();
+			$this->_mail->sendMailUserUpdated();
 			FLASH::setFlash('Votre profil a bien été mis à jour, un mail de confirmation vous a été envoyé.', 'success');
 		}
-		$this->renderViewRegister();
+		$this->renderViewAdmin();
 	}
 
 	// public function addUser()

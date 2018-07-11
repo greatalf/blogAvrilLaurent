@@ -47,7 +47,9 @@ class ControllerUser extends ControllerMain
 		{
 			if(isset($_POST['connect_submit']))
 			{
-				sleep(2);		
+				$this->noAccessBecauseBruteForce();
+				sleep(1);
+
 				$user = $this->_usersManager->checkUser();
 				if($user->id() != NULL && !isset($_SESSION['auth']))
 				{
@@ -81,7 +83,7 @@ class ControllerUser extends ControllerMain
 	$this->_view = new View('connexion');
 	$this->_view->generate(NULL);
 	exit();
-	}
+	}	
 
 	public function isThereBruteForce($nbAttempt, $timeFreeze)
 	{
@@ -91,19 +93,24 @@ class ControllerUser extends ControllerMain
 
 		if($bruteForceTest >= $nbAttempt)
 		{
-			// $countDown = time()+(120);
 			FLASH::setFlash('Vous avez fait <strong>' . $nbAttempt . ' tentatives</strong> de connexion échouées!');
 
 			setcookie("BRUTEFORCE", $bruteForce = 'Réessayez ultérieurement.', time()+($timeFreeze));
-			while(isset($_COOKIE['BRUTEFORCE']))
-			{
-				header('Refresh:3, url=http://localhost/Blog_Avril_Laurent/connexion');
-				die('connexion bloquée, réessayez ultérieurement...');
-			}
+			
+			$this->noAccessBecauseBruteForce();
 
 			$this->_usersManager->deleteIp($this->_security->getIp());
 			header('Location: connexion');
 			exit();
+		}
+	}
+
+	public function noAccessBecauseBruteForce()
+	{
+		while(isset($_COOKIE['BRUTEFORCE']))
+		{
+			header('Refresh:3, url=http://localhost/Blog_Avril_Laurent/connexion');
+			die('connexion bloquée, réessayez ultérieurement...');
 		}
 	}
 
