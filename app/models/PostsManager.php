@@ -40,6 +40,7 @@ class PostsManager extends Model
 		$request->bindValue(':content', $content);
 
 		$request->execute();
+		$request->closeCursor();
 	}
 
 	/**
@@ -61,6 +62,7 @@ class PostsManager extends Model
 		$request->bindValue(':id', htmlspecialchars($_GET['postUpdate']), \PDO::PARAM_INT);
 
 		$request->execute();
+		$request->closeCursor();
 	}
 
     /**

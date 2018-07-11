@@ -237,6 +237,7 @@ class UsersManager extends Model
 		$user_id = htmlspecialchars($_GET['user_id']);
 
 		$request = $this->_db->prepare('UPDATE users SET confirmation_token = NULL, confirmedAt = NOW() WHERE id = ?')->execute([$user_id]);
+		$request->closeCursor();
 	}
 
 	public function makeConnexionOfUser()
@@ -307,6 +308,7 @@ class UsersManager extends Model
 		// var_dump($users->id()); die();
 
 		$request->execute();
+		$request->closeCursor();
 	}
 
 	public function addIp($ip)
@@ -324,6 +326,7 @@ class UsersManager extends Model
     	$request = $this->_db->prepare("SELECT * FROM connect WHERE userIp = ?");
 
 		$request->execute(array($ip));
+		$request->closeCursor();
 		return $request->rowCount();
     }
 }

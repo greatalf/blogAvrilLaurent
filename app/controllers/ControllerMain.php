@@ -11,7 +11,6 @@ use \Laurent\App\Service\Mail;
 use \Laurent\App\Service\Security;
 use \Laurent\App\Service\Profile;
 
-
 class ControllerMain
 {
 	protected $_post;

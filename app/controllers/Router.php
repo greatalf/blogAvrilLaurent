@@ -43,7 +43,7 @@ class Router
 					}				
 
 					switch($url[0])
-					{
+					{	
 				        case 'articles':				        
 				            $this->controllerArticle->getAllPosts();
 				            break;				        

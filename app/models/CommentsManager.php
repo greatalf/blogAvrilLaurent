@@ -38,6 +38,7 @@ class CommentsManager extends Model
         $request->bindValue(':post_id', $post_id);
 
         $request->execute();
+        $request->closeCursor();
     }
    
     public function delete(Comments $comments)
@@ -60,6 +61,7 @@ class CommentsManager extends Model
         $request->bindValue(':id', (int) $_GET['commentUpdate'], \PDO::PARAM_INT);
 
         $request->execute();
+        $request->closeCursor();
     }
 
     /**
