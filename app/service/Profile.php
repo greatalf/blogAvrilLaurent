@@ -14,7 +14,7 @@ class Profile
 {
 	public function __construct()
 	{
-		$_db = (new Model())->dbConnect();
+		//$_db = (new Model())->dbConnect();
 		$this->_db = $_db;
 		// $this->_posts = new PostsManager($_db);
 		$this->_postsManager = new PostsManager($_db);
