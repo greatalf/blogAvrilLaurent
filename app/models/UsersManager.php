@@ -36,18 +36,17 @@ class UsersManager extends Model
 			isset($_POST['regist_password']) &&
 			isset($_POST['regist_password_confirm']))
 		{
-			// session_start();
 			$request = $this->_db->prepare('INSERT INTO users (lastname, firstname, email, username, password, rank, confirmation_token) VALUES(?, ?, ?, ?, ?, ?, ?)');
 
-			$password = password_hash($_POST['regist_password'], PASSWORD_BCRYPT);
+			$password = password_hash(htmlspecialchars($_POST['regist_password']), PASSWORD_BCRYPT);
 			$token = parent::str_random(60);
 			$_SESSION['token'] = $token;
 
 			$request->execute([
-				$_POST['regist_lastname'],
-				$_POST['regist_firstname'],
-				$_POST['regist_email'],
-				$_POST['regist_username'],
+				htmlspecialchars($_POST['regist_lastname']),
+				htmlspecialchars($_POST['regist_firstname']),
+				htmlspecialchars($_POST['regist_email']),
+				htmlspecialchars($_POST['regist_username']),
 				$password,
 				1,
 				$token
@@ -65,9 +64,29 @@ class UsersManager extends Model
 	public function delete(Users $users)
 	{
 		$req = $this->_db->exec('DELETE FROM users WHERE id = '.(int) $users->id());
-	}
+	}    
 
     /**
+     * @see UsersManager::update()
+     * @param Users $users
+     */
+	public function update(Users $users)
+	{
+		$password = password_hash(htmlspecialchars($users->password()), PASSWORD_BCRYPT);
+		
+		$request = $this->_db->prepare('UPDATE users SET lastname = :lastname, firstname = :firstname, email = :email, username = :username, password = :password WHERE id = :id');
+
+		$request->bindValue(':lastname', $users->lastname());
+		$request->bindValue(':firstname', $users->firstname());
+		$request->bindValue(':email', $users->email());
+		$request->bindValue(':username', $users->username());
+		$request->bindValue(':password', $password);
+		$request->bindValue(':id', $users->id(), \PDO::PARAM_INT);
+
+		$request->execute();
+	}
+
+	/**
      * @see UsersManager::getUnique()
      * @param $id
      * @return mixed
@@ -83,24 +102,6 @@ class UsersManager extends Model
 		$user = $request->fetch();
 
 		return $user;
-	}
-
-    /**
-     * @see UsersManager::update()
-     * @param Users $users
-     */
-	public function update(Users $users)
-	{
-		$request = $this->_db->prepare('UPDATE users SET lastname = :lastname, firstname = :firstname, email = :email, username = :username, password = :password WHERE id = :id');
-
-		$request->bindValue(':lastname', $users->lastname());
-		$request->bindValue(':firstname', $users->firstname());
-		$request->bindValue(':email', $users->email());
-		$request->bindValue(':username', $users->username());
-		$request->bindValue(':password', $users->password());
-		$request->bindValue(':id', $users->id(), \PDO::PARAM_INT);
-
-		$request->execute();
 	}
 
     /**
@@ -137,22 +138,32 @@ class UsersManager extends Model
 
 	public function checkUser()
 	{
-		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
+		if(isset($_GET['user_id']))
 		{
-			$connect_email = htmlspecialchars($_POST['connect_email']);
-			$connect_pass = htmlspecialchars($_POST['connect_pass']);
-			// $password = password_hash($connect_pass, PASSWORD_BCRYPT);
-			// $pass_verif = password_verify($_POST['connect_pass'], );
-			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ? AND password = ?');
-			$request->execute(array($connect_email, md5($connect_pass)));
 
-			// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
-
+			$request = $this->_db->prepare('SELECT * FROM users WHERE id = ? AND confirmation_token = NULL');
+			$request->execute(array($_GET['user_id']));
 			$data = $request->fetch();
 			$user = new Users($data);
 
-	        $request->closeCursor();
-	        return $user;
+		    $request->closeCursor();
+		    return $user;
+		}
+
+		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
+		{
+			$connectEmail = htmlspecialchars($_POST['connect_email']);
+			$password = htmlspecialchars($_POST['connect_pass']);
+
+			$request = $this->_db->prepare('SELECT * FROM users WHERE email = ?');
+			$request->execute(array($connectEmail));
+			$data = $request->fetch();
+			if(password_verify($password, $data['password']))
+			{				
+				$user = new Users($data);
+		        $request->closeCursor();
+		        return $user;
+			}
 		}
 	}
 
@@ -237,32 +248,31 @@ class UsersManager extends Model
 		$user_id = htmlspecialchars($_GET['user_id']);
 
 		$request = $this->_db->prepare('UPDATE users SET confirmation_token = NULL, confirmedAt = NOW() WHERE id = ?')->execute([$user_id]);
-		$request->closeCursor();
+		// $request->closeCursor();
 	}
 
 	public function makeConnexionOfUser()
 	{
-		$user = $this->checkUserById();
-		// var_dump($user); die();
-		if($user)
-		{			
-			if($user->id() != false && !isset($_SESSION['auth']))
-			{
-				$this->_security = new Security;
-				//defuse the bruteforce checking
-				$this->deleteIp($this->_security->getIp());
-				// Initialisation des datas
-				$_SESSION['auth'] = 1;
-				$_SESSION['id'] = $user->id();
-				$_SESSION['lastname'] = $user->lastname();
-				$_SESSION['firstname'] = $user->firstname();
-				$_SESSION['email'] = $user->email();
-				$_SESSION['username'] = $user->username();
-				$_SESSION['password'] = $user->password();
-				$_SESSION['rank'] = $user->rank();
+		$user = $this->checkUser();
+		if($user != NULL && !isset($_SESSION['auth']))
+		{
+			$this->_security = new Security;
+			//defuse the bruteforce checking
+			$this->deleteIp($this->_security->getIp());
+			// Initialisation des datas
 
-				$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));	
-			}
+			$_SESSION['lastTime'] = time();
+
+			$_SESSION['auth'] = 1;
+			$_SESSION['id'] = $user->id();
+			$_SESSION['lastname'] = $user->lastname();
+			$_SESSION['firstname'] = $user->firstname();
+			$_SESSION['email'] = $user->email();
+			$_SESSION['username'] = $user->username();
+			$_SESSION['password'] = $user->password();
+			$_SESSION['rank'] = $user->rank();
+
+			$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));	
 		}
 	}
 
@@ -273,8 +283,8 @@ class UsersManager extends Model
 
 	public function getUsersList()
 	{
-		$request = $this->_db->query('SELECT * FROM users');
-		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
+		$request = $this->_db->query('SELECT id, lastname, firstname, email, username, password, rank, DATE_FORMAT(confirmedAt, \'%d/%m/%Y à %Hh%i\') AS confirmedAt FROM users');
+		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Users');
 
 		$allUsers = [];
 

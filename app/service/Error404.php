@@ -18,4 +18,13 @@ class Error404
 			$this->_view->generate(['errorMsg' => $errorMsg]);		
 		}	
 	}
+
+	public function errorUrl()
+	{
+		if(!headers_sent())
+		{			
+			header('Refresh:0, url=http://localhost/Blog_Avril_Laurent/accueil');
+			exit();	
+		}
+	}
 }

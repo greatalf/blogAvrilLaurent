@@ -40,12 +40,20 @@ FLASH::flash();
 echo (count($comments) == 0) ? 'Aucun commentaire n\'a encore été posté pour cet article!' : '';
 foreach ($comments as $comment) :
 ?>
-	<author class="author_com"><?= $comment->author() ?></author>
+  <author class="author_com"><?= $comment->author() ?></author>
   <p class="content_com"><?= $comment->content() ?></p>
   <p class="date_writen_com"><em><?= 
   $comment->updateDate() != NULL ? "Posté le " . $comment->addDate() . ", modifié le " . $comment->updateDate() : "Posté le " . $comment->addDate();
   ?></em></p>
-  <?= (isset($_SESSION['rank']) && $_SESSION['rank'] == 2) ? '<boutton class="btn btn-warning btn-sm"><a style="color:white;" href="commentupdate&commentUpdate=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'">Modifier</a></boutton>' : '' ?>
+
+  <?= ((isset($_SESSION['rank']) && $_SESSION['rank'] == 2))
+    ? '<a style="color:white;" href="commentupdate&commentUpdate=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-warning btn-sm">Modifier</boutton></a> | <a style="color:white;" href="commentdelete&commentDelete=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-info btn-sm">Supprimer</boutton></a>' : '' ?>
+
+<?php foreach($getCommentById as $getComment) : ?>
+<?php if((isset($getCommentById) && $comment->author() == $getComment->author())) : ?>
+    <?php echo '<a style="color:white;" href="commentupdate&commentUpdate=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-warning btn-sm">Modifier</boutton></a> | <a style="color:white;" href="commentdelete&commentDelete=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-info btn-sm">Supprimer</boutton></a>'; ?>
+<?php endif; ?>
+<?php endforeach; ?>    
 <hr>
 <?php
 endforeach;

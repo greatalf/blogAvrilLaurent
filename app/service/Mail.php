@@ -4,6 +4,7 @@ namespace Laurent\App\Service;
 use \Laurent\App\Views\View;
 use Laurent\App\Service\Flash;
 use Laurent\App\Service\Profile;
+use Laurent\App\Controllers\ControllerAdmin;
 
 class Mail
 {
@@ -72,8 +73,8 @@ class Mail
 		}
 
 		FLASH::setFlash('Un mail de modification de votre profil vient de vous être envoyé.', 'success');
-		$this->_profile = new Profile;
-		$this->_profile->renderViewAdmin();
+		$this->_controllerAdmin = new ControllerAdmin;
+		$this->_controllerAdmin->renderViewAdmin();
 		exit();
 	}
 

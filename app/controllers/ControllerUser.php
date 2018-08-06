@@ -29,7 +29,7 @@ class ControllerUser extends ControllerMain
 			header('Location:connexion');
 			exit();
 		}
-		setcookie("deco", $deco = 'Vous avez bien été déconnecté.', time()+(2));
+		setcookie("deco", $deco = 'Vous êtes déconnecté.', time()+(2));
 		session_destroy();
 		header('Location:connexion');
 		exit();
@@ -50,31 +50,16 @@ class ControllerUser extends ControllerMain
 				$this->noAccessBecauseBruteForce();
 				sleep(1);
 
-				$user = $this->_usersManager->checkUser();
-				if($user->id() != NULL && !isset($_SESSION['auth']))
+				$this->_usersManager->makeConnexionOfUser();
+
+				if(isset($_SESSION['username']))
 				{
-					//defuse the bruteforce checking
-					$this->_usersManager->deleteIp($this->_security->getIp());
-					// Initialisation des datas
-					$_SESSION['auth'] = 1;
-					$_SESSION['id'] = $user->id();
-					$_SESSION['lastname'] = $user->lastname();
-					$_SESSION['firstname'] = $user->firstname();
-					$_SESSION['email'] = $user->email();
-					$_SESSION['username'] = $user->username();
-					$_SESSION['password'] = $user->password();
-					$_SESSION['rank'] = $user->rank();
-
-					$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));
-
 					FLASH::setFlash('Bienvenue, ' . $_SESSION['username'] . ' !', 'success');
-					header('Location: articles');
+					header('Location: admin');
 					exit();
 				}
-				else
-				{
-					$this->isThereBruteForce(5/*nbAttempt*/, 45/*timeFreeze*/);
-				}
+				$this->isThereBruteForce(5/*nbAttempt*/, 45/*timeFreeze*/);
+				
 				FLASH::setFlash('L\'adresse email et le mot de passe ne correspondent pas!');
 				header('Location: connexion');
 				exit();
@@ -84,6 +69,13 @@ class ControllerUser extends ControllerMain
 	$this->_view->generate(NULL);
 	exit();
 	}	
+
+	public function forgetPass()
+	{
+		$this->_view = new View('forgottenPass');
+		$this->_view->generate(NULL);
+		exit();
+	}
 
 	public function isThereBruteForce($nbAttempt, $timeFreeze)
 	{
@@ -96,7 +88,7 @@ class ControllerUser extends ControllerMain
 			FLASH::setFlash('Vous avez fait <strong>' . $nbAttempt . ' tentatives</strong> de connexion échouées!');
 
 			setcookie("BRUTEFORCE", $bruteForce = 'Réessayez ultérieurement.', time()+($timeFreeze));
-			
+
 			$this->noAccessBecauseBruteForce();
 
 			$this->_usersManager->deleteIp($this->_security->getIp());

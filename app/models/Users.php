@@ -237,7 +237,7 @@ class Users
 	public function setConfirmedAt($confirmedAt) 
 	{
 		{
-			$this->confirmedAt = (int) $confirmedAt;
+			$this->confirmedAt = $confirmedAt;
 		}
 	}
 
