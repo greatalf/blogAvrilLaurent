@@ -1,15 +1,18 @@
 <?php
 namespace Laurent\App\Controllers;
 
-use \Laurent\App\Models\PostsManager;
 use \Laurent\App\Models\Posts;
+use \Laurent\App\Models\Comments;
+use \Laurent\App\Models\Users;
+use \Laurent\App\Models\PostsManager;
 use \Laurent\App\Models\CommentsManager;
 use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
 use \Laurent\App\Controllers\ControllerArticle;
-use Laurent\App\Views\View;
-use Laurent\App\Service\Flash;
-use Laurent\App\Service\Security;
+use \Laurent\App\Views\View;
+use \Laurent\App\Service\Flash;
+use \Laurent\App\Service\Security;
+use \Laurent\App\Service\Profile;
 
 class ControllerAdmin extends ControllerMain
 {
@@ -20,6 +23,11 @@ class ControllerAdmin extends ControllerMain
     		FLASH::setFlash('Une connexion est requise pour accéder à l\'espace d\'administration!');
 			header('Location: connexion');
 			exit();    	
+		}
+
+		if(isset($_POST['profil_modify']))
+		{
+			$this->_profile->registerProfile();
 		}
 		$this->renderViewAdmin();			
 		exit();
@@ -39,13 +47,9 @@ class ControllerAdmin extends ControllerMain
 				FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
 				header('Location: articles');
 				exit();
-			}	
-			$this->postAdd();			
-	    }
-	}    	
-
-    public function postAdd()
-    {    
+			}
+		}	
+	    
     	$this->_security->securizationCsrf();
 
 		$this->_post = new Posts
@@ -69,38 +73,141 @@ class ControllerAdmin extends ControllerMain
 		$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
     	$allUsers = $this->_usersManager->getUsersList();
     	$postList = $this->_postsManager->getList(0,25);
-    	
-    	// if(isset($_GET['postDelete']))
-    	// {$post = $this->_postsManager->getUnique($_GET['postDelete']);}
+    	// var_dump($postList->id());
+
+    	$validateComment = $this->_commentsManager->validateCommentList();
+		$usersCount = $this->_usersManager->count();
+		$postCount = $this->_postsManager->count();
+		$commentValidateCount = $this->_commentsManager->count();
+		$getCommentById = $this->_commentsManager->getCommentByUserId();
+		$allComments = $this->_commentsManager->getAllComments();
 
 		if(!headers_sent())
-		{						
+		{		
+			if($_SESSION['rank'] == 2)	
+			{				
 				$this->_view = new View('admin');		
-				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers));		
+				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers, 'validateComment' => $validateComment, 'usersCount' => $usersCount, 'postCount' => $postCount, 'commentValidateCount' => $commentValidateCount, 'allComments' => $allComments));		
+			}	
+			if(isset($getCommentById))
+			{
+				$this->_view = new View('admin');		
+				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'getCommentById' => $getCommentById, 'allComments' => $allComments));
+			}	
+			$this->_view = new View('admin');		
+			$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos));	
 		}
 	}
 
 	public function postDelete()
 	{
-		//au clik sur supprimer dans le viewAdmin, le href de s'appelle pas et c'est la page admin qui se rafraîchit au lieu que ce soit le die juste en dessous qui s'opère...
-		if(isset($_GET['postdelete']))
+		if(isset($_GET['postDelete']))
 		{	
-			$post = $this->_postsManager->getUnique($_GET['postdelete']);
+			$post = $this->_postsManager->getUnique($_GET['postDelete']);
 
 			$this->_security->securizationCsrf();
 
 			$this->_post = new Posts
 			([
-				'id' => $_GET['postdelete']
+				'id' => $_GET['postDelete']
 			]);
 
 			$this->_postsManager->delete($this->_post);
 
-			FLASH::setFlash('L\'article a bien été supprimé', 'success');
+			FLASH::setFlash('L\'article ainsi que ses commentaires associés ont bien été supprimé', 'success');
 			header('Location: admin');
 			exit();
 		}
 	}
+
+	public function postUpdate()
+	{
+		if(isset($_GET['postUpdate']))
+		{
+			$this->_security->securizationCsrf();
+
+			if(isset($_POST['post_update']))
+			{	
+				if(empty($_POST['post_author']) || empty($_POST['post_title']) || empty($_POST['post_chapo']) || empty($_POST['post_content']))
+				{
+					FLASH::setFlash('Remplissez correctement tous les champs!');
+					header('Location: articles');
+					exit();
+				}				
+				$this->_post = new Posts
+				([
+					'author' => $_POST['post_author'],
+					'title' => $_POST['post_title'],
+					'chapo' => $_POST['post_chapo'],
+					'content' => $_POST['post_content']
+				]);
+
+				$this->_postsManager->update($this->_post);
+
+				FLASH::setFlash('L\'article a bien été modifié.', 'success');
+				header('Location: articles');
+				exit();		
+			}
+			$updatePost = $this->_postsManager->getUnique($_GET['postUpdate']);
+			$posts = $this->_postsManager->getList(0, 5);
+			$this->_view = new View('articles');
+			$this->_view->generate(array('posts' => $posts, 'updatePost' => $updatePost));
+			exit();
+		}
+	}
+
+
+	public function commentValidate()
+	{
+		$this->_commentsManager->turnValidateCommentOk(new Comments([
+			'id' => htmlspecialchars($_GET['commentValidate'])
+		]));
+		FLASH::setFlash('Le commentaire a bien été validé.', 'success');
+		header('Location: admin');
+		exit();	
+	}	
+
+	public function commentNoValidate()
+	{
+		$this->_commentsManager->turnNoValidateComment(new Comments([
+			'id' => htmlspecialchars($_GET['commentNoValidate'])
+		]));
+		FLASH::setFlash('Le commentaire a bien été supprimé.', 'success');
+		header('Location: admin');
+		exit();
+	}
+
+	public function userBanish()
+	{
+		$this->_usersManager->delete(new Users([
+			'id' => htmlspecialchars($_GET['userBanish'])
+		]));
+		FLASH::setFlash('L\'utilisateur a bien été supprimé.', 'success');
+		header('Location: admin');
+		exit();
+	} 
+
+	public function upgradeUser()
+	{
+		$this->_usersManager->upgradeUser(new Users([
+			'id' => htmlspecialchars($_GET['upgradeUser'])
+		]));
+		FLASH::setFlash('L\'utilisateur a bien été upgradé au rang d\'administrateur.', 'success');
+		header('Location: admin');
+		exit();
+	}
+
+
+
+	// public function validationComments()
+	// {
+	// 	$validateList = $this->_commentManager->validateCommentList();
+	// 	var_dump($validateList); die();
+	// 	// appeller les commentaires qui ont la valeur validation à 0.
+	// 	// Mettre à 1 si le boutton validation est clické, donc que validationComments est détéctée dans l'url.
+	// 	$this->renderViewAdmin();
+	// }
+
 	// public function admin()
 	// {
 	// 	if(isset($_SESSION['auth']))
