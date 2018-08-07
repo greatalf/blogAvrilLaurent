@@ -70,16 +70,13 @@ class CommentsManager extends Model
     public function getListComments($ref)
     {
         $request = $this->_db->query('SELECT DISTINCT comments.id, comments.author, comments.content, DATE_FORMAT(comments.addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(comments.updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM comments JOIN posts WHERE  comments.validationComment = 1 AND comments.post_id = ' . (int)$ref . ' ORDER BY addDate DESC');
-
-        // $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Comments');
-
+        
         $listComments = [];
 
         while ($data = $request->fetch())
         {
             $listComments[] = new Posts($data);
         }
-// var_dump($listComments); die();
         $request->closeCursor();
         return $listComments;
     }
@@ -90,17 +87,19 @@ class CommentsManager extends Model
      * @return mixed
      */
     public function getUniqueComment($id)
-    {
+    {        
         $request = $this->_db->prepare('SELECT id, author, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM comments WHERE id = :id');
         $request->bindValue(':id', $id);
 
-        $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Comments');
         $request->execute();
 
         $data = $request->fetch();
         $comment = new Comments($data);
         $request->closeCursor();
-        return $comment;
+        if(($_SESSION['rank'] == 2) || ($_SESSION['rank'] == 1 && $_SESSION['username'] == $comment->author()))
+        {
+            return $comment;            
+        }
     } 
 
     public function count()
@@ -110,7 +109,7 @@ class CommentsManager extends Model
 
     public function validateCommentList()
     {
-        $request = $this->_db->query('SELECT id, author, content, addDate FROM comments WHERE validationComment = 0');
+        $request = $this->_db->query('SELECT id, author, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate FROM comments WHERE validationComment = 0');
 
         $validateComment = [];
 
@@ -140,8 +139,8 @@ class CommentsManager extends Model
 
     public function getCommentByUserId()
     {
-        $username = htmlspecialchars($_SESSION['username']);
-        $request = $this->_db->prepare('SELECT DISTINCT comments.id, comments.author, comments.content, DATE_FORMAT(comments.addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(comments.updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, posts.title FROM comments JOIN posts WHERE comments.author = :author AND posts.id = comments.post_id ORDER BY addDate DESC');
+        $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '';
+        $request = $this->_db->prepare('SELECT DISTINCT comments.id, comments.author, comments.content, DATE_FORMAT(comments.addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(comments.updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, posts.title, posts.id as chapo FROM comments JOIN posts WHERE comments.author = :author AND posts.id = comments.post_id ORDER BY addDate DESC');
         $request->bindValue(':author', $username);
 
         $request->execute();

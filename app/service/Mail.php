@@ -112,4 +112,33 @@ class Mail
 		header('Refresh:0, url=http://localhost/Blog_Avril_Laurent/accueil#contact');
 		exit();
 	}
+
+	public function forgetPassMail()
+	{
+		$header="MIME-Version: 1.0\r\n";
+		$header.="From:support@avril-laurent.fr"."\n";
+		$header.='Content-Type:text/html; charset="uft-8"'."\n";
+		$header.="Content-Transfer-Encoding: 8bit";
+
+		$to = $_POST['connect_email'];
+		$subject = 'Confirmation de votre inscription';
+		$message = 
+			'<html>
+				<header>
+					<h1>Confirmation de votre inscription</h1>
+				</header>
+				<body>
+					Bonjour ' . htmlspecialchars($_SESSION['username']) . ', pour réinitialiser votre mot de passe, accédez au lien suivant : <a href="http://localhost/Blog_Avril_Laurent/resetPass&user_id=' .  htmlspecialchars($_SESSION['id']) . '&tokenCsrf=' . $_SESSION['tokenCsrf'] . '">Changer de mot de passe</a>
+				</body>
+			</html>';
+
+		$mail = mail($to, $subject, $message, $header);
+		if(!$mail)
+		{
+			FLASH::setFlash('L\'envoi a échoué. Vérifiez votre connexion et réessayer ultérieurement.');
+			$this->_view = new View('passForgotten');
+			$this->_view->generate(NULL);
+			exit();
+		}
+	}
 }

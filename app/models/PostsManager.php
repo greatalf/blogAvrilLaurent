@@ -91,7 +91,6 @@ class PostsManager extends Model
 		}
 
 		$request = $this->_db->query($sql);
-		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
 		$posts = [];
 
 		while ($data = $request->fetch())
@@ -140,35 +139,11 @@ class PostsManager extends Model
 		$request->bindValue(':id', $post_id);
 		$request->execute();
 
-		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
-
 		$data = $request->fetch();
-
 		$post = new Posts($data);
 		$request->closeCursor();
 
-		// var_dump($post); die();
-
 		return $post;
-	}
-
-    /**
-     * Méthode permettant d'enregistrer une news.
-     * @param Posts $posts
-     * @return void
-     * @see self::add()
-     * @see self::update()
-     */
-	public function save(Posts $posts)
-	{
-	  if ($posts->isValable())
-	  {
-	    $posts->isNew() ? $this->add($posts) : $this->update($posts);
-	  }
-	  else
-	  {
-	    throw new RuntimeException('L\'article doit être valide pour être enregistrée');
-	  }
 	}
 
 	public function count()

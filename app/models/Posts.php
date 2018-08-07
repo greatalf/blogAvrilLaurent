@@ -6,13 +6,6 @@ class Posts
 {
 	/**
 	 * 
-	 * @var array
-	 * @access protected
-	 */
-	// protected  $errors = [];
-
-	/**
-	 * 
 	 * @var int
 	 * @access protected
 	 */
@@ -61,14 +54,6 @@ class Posts
 	protected  $updateDate;
 
 	/**
-	*Constantes concernées par les erreurs pendant l'execution d'une méthode.
-	*/
-	// const INVAILABLE_AUTHOR = 1;
-	// const INVAILABLE_TITLE = 2;
-	// const INVAILABLE_CHAPO = 3;
-	// const INVAILABLE_CONTENT = 4;
-
-	/**
 	 * @access public
 	 * @param array $values 
 	 * @return void
@@ -98,25 +83,6 @@ class Posts
 			}
 		}
 	}
-
-	 /**
-	   * Méthode permettant de savoir si l'article est nouveau.
-	   * @return bool
-	   */
-	  public function isNew()
-	  {
-	    return empty($this->id);
-	  }
-
-	/**
-	 * @access public
-	 * @return bool
-	 */
-	public function isValablePost() 
-	{
-		return (!empty($this->title) && !empty($this->chapo && !empty($this->content)));
-	}
-
 
 /////////////////////////////////////////////////////////////
 //////////////////////SETTERS////////////////////////////////
@@ -148,10 +114,6 @@ class Posts
 		{
 			$this->author = $author;			
 		}
-		else
-		{
-			// $this->errors[] = self::INVAILABLE_AUTHOR;
-		}
 	}
 
 	/**
@@ -164,10 +126,6 @@ class Posts
 		if(is_string($title) && strlen($title) <= 50 && !empty($title))
 		{
 			$this->title = $title;			
-		}
-		else
-		{
-			// $this->errors[] = self::INVAILABLE_TITLE;
 		}
 	}
 
@@ -182,10 +140,6 @@ class Posts
 		{
 			$this->chapo = $chapo;			
 		}
-		else
-		{
-			// $this->errors[] = self::INVAILABLE_CHAPO;
-		}
 	}
 
 	/**
@@ -198,10 +152,6 @@ class Posts
 		if(is_string($content) && !empty($content))
 		{
 			$this->content = $content;			
-		}
-		else
-		{
-			// $this->errors[] = self::INVAILABLE_CONTENT;
 		}
 	}
 

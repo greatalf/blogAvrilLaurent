@@ -25,7 +25,6 @@ class Flash
 				<?= $_SESSION['flash']['message'] ?>
 			</div>
 		<?php
-		// D::V($_SESSION['flash']);
 		}
 		unset($_SESSION['flash']);
 	}
