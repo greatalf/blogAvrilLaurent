@@ -36,22 +36,22 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href=".">laurentavril.fr</a>
+                <a class="navbar-brand" href="http://localhost/Blog_Avril_Laurent/accueil">laurentavril.fr</a>
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="hidden">
-                        <a href="#page-top"></a>
+                        <a href="accueil#page-top"></a>
                     </li>
                     <li class="page-scroll">
-                        <a href="http://localhost/Blog_Avril_Laurent/#portfolio">Portfolio</a>
+                        <a href="http://localhost/Blog_Avril_Laurent/accueil#portfolio">Portfolio</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="http://localhost/Blog_Avril_Laurent/#about">A propos</a>
+                        <a href="http://localhost/Blog_Avril_Laurent/accueil#about">A propos</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="http://localhost/Blog_Avril_Laurent/#contact">Contact</a>
+                        <a href="http://localhost/Blog_Avril_Laurent/accueil#contact">Contact</a>
                     </li>                                        
                     <li class="page-scroll">
                         <a href="http://localhost/Blog_Avril_Laurent/articles">Articles</a>
@@ -94,7 +94,7 @@
     </nav>
 
     <!-- Article Section -->    
-    <section id="articles" class="success"><!-- class="success" -->
+    <section id="articles"><!-- class="success" -->
         <div class="container">
             <h1 class="text-center"><?= $t ?></h1>
             <div class="row">
@@ -112,7 +112,7 @@
                 <div class="row">
                     <div class="footer-col col-md-4">
                         <?php if(isset($_SESSION['auth'])): ?>
-                            <h3><a href="http://localhost/Blog_Avril_Laurent/admin">>Mon espace perso<</a></h3>
+                            <h3><a href="http://localhost/Blog_Avril_Laurent/admin">>Espace administration<</a></h3>
                         <?php endif; ?>
                         <h3>Localisation</h3>
                         <p>241, Boulevard Sénardière
@@ -137,7 +137,7 @@
                     </div>
                     <div class="footer-col col-md-4">
                         <h3>Un petit devis</h3>
-                        <p>Contactez moi et je vous dresserai un devis sur mesure adapté à vos exigences et à vos besoins -><a href="http://localhost/Blog_Avril_Laurent/#contact">ici</a><-</p>
+                        <p>Contactez moi et je vous dresserai un devis sur mesure adapté à vos exigences et à vos besoins -><a href="http://localhost/Blog_Avril_Laurent/accueil#contact">ici</a><-</p>
                     </div>
                 </div>
             </div>

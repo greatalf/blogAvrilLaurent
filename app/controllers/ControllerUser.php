@@ -10,6 +10,8 @@ use \Laurent\App\Views\View;
 use Laurent\App\Service\Mail;
 use Laurent\App\Service\Flash;
 use Laurent\App\Service\Security;
+use Laurent\App\Service\Profile;
+use Laurent\App\Controllers\ControllerAdmin;
 
 class ControllerUser extends ControllerMain
 {
@@ -27,7 +29,7 @@ class ControllerUser extends ControllerMain
 			header('Location:connexion');
 			exit();
 		}
-		setcookie("deco", $deco = 'Vous avez bien été déconnecté.', time()+(2));
+		setcookie("deco", $deco = 'Vous êtes déconnecté.', time()+(2));
 		session_destroy();
 		header('Location:connexion');
 		exit();
@@ -35,68 +37,150 @@ class ControllerUser extends ControllerMain
 
 	public function connexion()
 	{
+		if(isset($_SESSION['auth']))
+		{
+			FLASH::setFlash('Vous êtes déjà connecté ' . $_SESSION['username'] . '...', 'success');
+			header('Location: admin');
+			exit();
+		}
 		if(isset($_POST['connect_email']) && isset($_POST['connect_pass']))
 		{
 			if(isset($_POST['connect_submit']))
-			{				
-				$user = $this->_usersManager->checkUser();
-				if($user != false && !isset($_SESSION['auth']))
+			{
+				$this->_security->noAccessBecauseBruteForce();
+				sleep(1);
+
+				$this->_usersManager->makeConnexionOfUser();
+
+				if(isset($_SESSION['username']))
 				{
-					// Initialisation des datas
-					$_SESSION['auth'] = 1;
-					$_SESSION['id'] = $user->id();
-					$_SESSION['lastname'] = $user->lastname();
-					$_SESSION['firstname'] = $user->firstname();
-					$_SESSION['email'] = $user->email();
-					$_SESSION['username'] = $user->username();
-					$_SESSION['password'] = $user->password();
-					$_SESSION['rank'] = $user->rank();
-
-					$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));
-
-					FLASH::setFlash('Bienvenue, '.$_SESSION['username'].' !', 'success');
-					header('Location: articles');
+					FLASH::setFlash('Bienvenue, ' . $_SESSION['username'] . ' !', 'success');
+					header('Location: admin');
 					exit();
 				}
+				$this->isThereBruteForce(5/*nbAttempt*/, 45/*timeFreeze*/);
+				
+				FLASH::setFlash('L\'adresse email et le mot de passe ne correspondent pas!');
+				header('Location: connexion');
+				exit();
 			}
-		}
+		}		
 	$this->_view = new View('connexion');
 	$this->_view->generate(NULL);
 	exit();
+	}	
+
+	public function isThereBruteForce($nbAttempt, $timeFreeze)
+	{
+		$this->_usersManager->addIp($this->_security->getIp());
+
+		$bruteForceTest = $this->_usersManager->bruteForceTest($this->_security->getIp());
+
+		if($bruteForceTest >= $nbAttempt)
+		{
+			FLASH::setFlash('Vous avez fait <strong>' . $nbAttempt . ' tentatives</strong> de connexion échouées!');
+
+			setcookie("BRUTEFORCE", $bruteForce = 'Réessayez ultérieurement.', time()+($timeFreeze));
+
+			$this->_security->noAccessBecauseBruteForce();
+
+			$this->_usersManager->deleteIp($this->_security->getIp());
+			header('Location: connexion');
+			exit();
+		}
 	}
 
 	public function checkUniqueEmailAndPseudo()
 	{
+		$this->_controllerAdmin = new ControllerAdmin;
 		unset($countEmail);
 		$countEmail = $this->_usersManager->checkEmail();
-				if($countEmail > 0)
-				{
-					FLASH::setFlash('Cette adresse Email est déjà utilisée.');
-					$this->_view = new View('Register');
-					$this->_view->generate(NULL);
-					exit();
-				}
+		var_dump($countEmail); die();
+		if($countEmail > 0)
+		{
+			FLASH::setFlash('Cette adresse Email est déjà utilisée.');
+			if(isset($_POST['profil_email']))
+			{	
+				$this->_controllerAdmin->renderViewAdmin();		
+			}
+			$this->_view = new View('register');
+			$this->_view->generate(NULL);
+			exit();
+		}
 
-			unset($countPseudo);
-			$countPseudo = $this->_usersManager->checkPseudo();
-			if($countPseudo > 0)
+		unset($countPseudo);
+		$countPseudo = $this->_usersManager->checkPseudo();
+		if($countPseudo > 0)
+		{
+			die('pseudo compté');
+			FLASH::setFlash('Ce pseudo est déjà utilisé.');
+			if(isset($_POST['profil_username']))
 			{
-				FLASH::setFlash('Ce pseudo est déjà utilisé.');
-				$this->_view = new View('Register');
+				$this->_controllerAdmin->renderViewAdmin();				
+			}
+				$this->_view = new View('register');
 				$this->_view->generate(NULL);
 				exit();
+		}
+	}
+
+	public function checkUniqueEmail()
+	{
+		$this->_controllerAdmin = new ControllerAdmin;
+		unset($countEmail);
+		$countEmail = $this->_usersManager->checkEmail();
+		// var_dump($countEmail); die();
+		if($countEmail > 0)
+		{
+			FLASH::setFlash('Cette adresse Email est déjà utilisée.');
+			if(isset($_POST['profil_email']))
+			{	
+				$this->_controllerAdmin->renderViewAdmin();		
 			}
+			$this->_view = new View('register');
+			$this->_view->generate(NULL);
+			exit();
+		}
+	}
+
+	public function checkUniquePseudo()
+	{
+		$this->_controllerAdmin = new ControllerAdmin;
+		unset($countPseudo);
+		$countPseudo = $this->_usersManager->checkPseudo();
+		if($countPseudo > 0)
+		{
+			FLASH::setFlash('Ce pseudo est déjà utilisé.');
+			if(isset($_POST['profil_username']))
+			{
+				$this->_controllerAdmin->renderViewAdmin();				
+			}
+				$this->_view = new View('register');
+				$this->_view->generate(NULL);
+				exit();
+		}
 	}
 
 	public function addUser()
 	{
-		$newUser = $this->_usersManager->add($this->_user);
-		$GLOBALS['newUser'] = $newUser;
+		if(session_status() == PHP_SESSION_NONE)
+    	{
+   			session_start();
+		}
+		$_SESSION['newUser'] = $this->_usersManager->add($this->_user);
 
-		if($GLOBALS['newUser'] != false && !isset($_SESSION['auth']))
+		var_dump($_SESSION['newUser']); die();
+
+		if($_SESSION['newUser'] != false && !isset($_SESSION['auth']))
 		{
 			$this->_mail->sendMail();
 		}
+	}
+
+	public function register()
+	{	
+		$this->_profile = new Profile();
+		$this->_profile->registerProfile();
 	}
 
 	// public function sendMail()

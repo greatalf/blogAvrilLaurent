@@ -40,6 +40,7 @@ class PostsManager extends Model
 		$request->bindValue(':content', $content);
 
 		$request->execute();
+		$request->closeCursor();
 	}
 
 	/**
@@ -58,9 +59,10 @@ class PostsManager extends Model
 		$request->bindValue(':title', $title);
 		$request->bindValue(':chapo', $chapo);
 		$request->bindValue(':content', $content);
-		$request->bindValue(':id', $_GET['post_update'], \PDO::PARAM_INT);
+		$request->bindValue(':id', htmlspecialchars($_GET['postUpdate']), \PDO::PARAM_INT);
 
 		$request->execute();
+		$request->closeCursor();
 	}
 
     /**
@@ -70,6 +72,7 @@ class PostsManager extends Model
 	public function delete(Posts $posts)
 	{
 		$this->_db->exec('DELETE FROM posts WHERE id = '.(int) $posts->id());
+		$this->_db->exec('DELETE FROM comments WHERE post_id = '.(int) $posts->id());
 	}
 
     /**
@@ -80,7 +83,7 @@ class PostsManager extends Model
      */
 	public function getList($debut = -1, $limite = -1)
 	{
-		$sql = 'SELECT id, author, title, chapo, content, addDate, updateDate FROM posts ORDER BY id DESC';
+		$sql = 'SELECT id, author, title, chapo, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM posts ORDER BY id DESC';
 
 		if($debut != -1 || $limite != -1)
 		{
@@ -95,7 +98,6 @@ class PostsManager extends Model
 		{
 			$posts[] = new Posts($data);
 		}
-
         $request->closeCursor();
         return $posts;
         
@@ -120,16 +122,7 @@ class PostsManager extends Model
 				$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
 				$listPosts = $request->fetchAll();
 
-				// var_dump($listPosts);
-
-				//Implémentation des dates d'ajout et de modification en temps qu'instances de DateTime.
-				foreach ($listPosts as $posts)
-				{
-				    $posts->setAddDate(new \DateTime($posts->addDate()));
-				    $posts->setUpdateDate(new \DateTime($posts->updateDate()));
-			    }
 			    $request->closeCursor();
-
 			    return $listPosts;			
 			}
 		}
@@ -142,21 +135,20 @@ class PostsManager extends Model
      */
 	public function getUnique($post_id)
 	{
-		$request = $this->_db->prepare('SELECT id, author, title, chapo, content, addDate, updateDate FROM posts WHERE id = :id');
+		$post_id = isset($_GET['post_id']) ? $_GET['post_id'] : '';
+		$request = $this->_db->prepare('SELECT id, author, title, chapo, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM posts WHERE id = :id');
 		$request->bindValue(':id', $post_id);
 		$request->execute();
 
-		$request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
-
-		$post = [];
+		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
 
 		$data = $request->fetch();
 
-		$post[] = new Posts($data);
+		$post = new Posts($data);
+		$request->closeCursor();
 
-		// $post->setAddDate(new \DateTime($posts->addDate()));
-		// $post->setUpdateDate(new \DateTime($posts->updateDate()));
-		
+		// var_dump($post); die();
+
 		return $post;
 	}
 

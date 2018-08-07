@@ -26,7 +26,7 @@ class ControllerArticle extends ControllerMain
     	{
     		$this->addPost();
     	}
-    exit();
+    // exit();
     }
 
     public function addPost()
@@ -65,15 +65,15 @@ class ControllerArticle extends ControllerMain
 	}    	
 
 /////////////////////////////////////////////////////////////
-///////////////////////////ARTCILE UNIQUE////////////////////
+///////////////////////////ARTICLE UNIQUE////////////////////
 /////////////////////////////////////////////////////////////
 
 	public function getUniquePost()
     {
-	    $post_id = htmlspecialchars($_GET['post_id']);
+	    $post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
 	    $onePost = $this->_postsManager->getUnique($post_id);
 
-		if($onePost[0]->id() != 0)
+		if($onePost->id() != 0)
 		{
 			if(isset($post_id) && $onePost)
 			{
@@ -81,14 +81,16 @@ class ControllerArticle extends ControllerMain
 
 				$this->addComment();
 
-				$this->buttons();
-
-				if(!headers_sent())
+				$getCommentById = $this->_commentsManager->getCommentByUserId();
+				if(isset($getCommentById))
 				{
-					$this->_view = new View('Article');	
-					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments/*, 'buttonUpdate' => $buttonUpdate, 'buttonDelete' => $buttonDelete*/));
-					exit();			
+					$this->_view = new View('article');	
+					$this->_view->generate(array('onePost' => $onePost, 'getCommentById' => $getCommentById, 'comments' => $comments));
+					exit();
 				}
+				$this->_view = new View('article');	
+					$this->_view->generate(array('onePost' => $onePost, 'comments' => $comments));
+					exit();
 			}
 		}
 		else
@@ -118,7 +120,7 @@ class ControllerArticle extends ControllerMain
 
 				$this->_commentsManager->add($this->_comment);
 
-				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
+				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé à l\'administrateur pour validation.', 'success');
 				header('Refresh:0, url=article&post_id=' . $post_id);
 				exit();
 			}
@@ -131,41 +133,84 @@ class ControllerArticle extends ControllerMain
 		}
 	}
 
-/////////////////////////////////////////////////////////////
-///////////////////////////BOUTONS///////////////////////////
-/////////////////////////////////////////////////////////////
+    public function commentUpdate()
+    {
+        if(isset($_GET['commentUpdate']))
+		{
+			$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
 
-// $GLOBALS['post_id'] = $this->_post->id();
+			$this->_security->securizationCsrf();
 
-public function buttons()
-{
-  if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
-  {
-    // $boutton_delete = '<a href="articles&postDelete=' . $GLOBALS['post_id'] . '&comment_delete=' . $refDel . '"> | <button type="submit" class="btn btn-danger">Supprimer</button></a>';
-  }
-  else
-  {
-    $boutton_delete = '';
-  }
-  // return $boutton_delete;
+			if(isset($_POST['com_update']))
+			{	
+				if(empty($_POST['com_content']))
+				{
+					FLASH::setFlash('Remplissez correctement le champs "commentaire" pour le modifier!');
+					header('Location: article&post_id=' . $post_id);
+					exit();
+				}				
+				$this->_comment = new Comments
+				([
+					'id' => (int) $_GET['commentUpdate'],
+					'content' => $_POST['com_content']
+				]);
+
+				$this->_commentsManager->update($this->_comment);
+
+				FLASH::setFlash('Le commentaire a bien été modifié.', 'success');
+				header('Refresh:0, url=article&post_id=' . $post_id);
+				exit();		
+			}
+
+
+
+$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
+		$onePost = $this->_postsManager->getUnique($post_id);
+
+		$updateComment = $this->_commentsManager->getUniqueComment($_GET['commentUpdate']);
+		$comments = $this->_commentsManager->getListComments($_GET['post_id']);
+		$getCommentById = $this->_commentsManager->getCommentByUserId();
+
+		$this->_view = new View('article');
+		$this->_view->generate(array('comments' => $comments, 'updateComment' => $updateComment, 'onePost' => $onePost, 'getCommentById' => $getCommentById));
+		exit();
 
 
 
 
-  if(isset($_SESSION['rank']) && ($_SESSION['rank'] == 2))
-  {
-    // $boutton_update = '<a href="article&post_id=' . $GLOBALS['post_id'] . '&comment_update=' . $refUpdate . '#update_com_form"><button type="submit" class="btn btn-info">Modifier</button></a>';
-  }
-  else
-  {
-    $boutton_update = '';
-  }
-  // return $boutton_update;
-}
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
+
+
+			$this->renderViewOneArticleAndComments();
+
+			$updateComment = $this->_commentsManager->getUniqueComment($_GET['commentUpdate']);
+
+			if($updateComment->id() === NULL)
+			{
+				header('Location: article&post_id=' . $post_id);
+				FLASH::setFlash('Le commentaire recherché est inexistant!');
+				exit();
+			}
+			$this->renderViewOneArticleAndComments();
+		}
+    }
+
+    public function commentDelete()
+    {
+    	if(isset($_GET['commentDelete']))
+		{
+			$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
+
+			$this->_comment = new Comments
+				([
+					'id' => (int)$_GET['commentDelete']
+				]);	
+			$this->_commentsManager->delete($this->_comment);
+			FLASH::setFlash('Le commentaire a bien été supprimé.', 'success');
+
+			header('Refresh:0, url=article&post_id=' . $post_id);
+			exit();
+		}
+    }
 
 	public function renderViewArticles()
 	{		
@@ -176,123 +221,26 @@ public function buttons()
 		}
 	}
 
+	public function renderViewOneArticleAndComments()
+	{
+
+
+/////////Il faut appeler les variables comme elles apparaissent dans la view article, sinon pas d'affichage...//////////////
+
+
+
+
+
+
+		$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
+		$onePost = $this->_postsManager->getUnique($post_id);
+		$updateComment = $this->_commentsManager->getUniqueComment($_GET['commentUpdate']);
+var_dump($updateComment); die();
+		$comments = $this->_commentsManager->getListComments($_GET['post_id']);
+		$getCommentById = $this->_commentsManager->getCommentByUserId();
+
+		$this->_view = new View('article');
+		$this->_view->generate(array('comments' => $comments, 'updateComment' => $updateComment, 'onePost' => $onePost, 'getCommentById' => $getCommentById));
+		exit();
+	}
 }
-
-///////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////RESTE DES FONCTIONS A IMPLEMENTER :)))///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //   	public function resteAFaire()
-	 //    {  		
-
-		// 	//if user diconnected
-		// 	if(!isset($_SESSION['auth']) && isset($_POST['com_submit']))
-		// 	{
-		// 		//Si les champs sont complétés
-		// 		if(!empty($_POST['com_content']) && isset($_POST['com_submit']))
-		// 		{
-		// 			//Si l'user existe bien et qu'il n'est pas connecté
-		// 			if($user != false)
-		// 			{
-		// 				//Initialisation des datas
-		// 				$_SESSION['auth'] = 1;
-		// 				$_SESSION['id'] = $user->id();
-		// 				$_SESSION['lastname'] = $user->lastname();
-		// 				$_SESSION['firstname'] = $user->firstname();
-		// 				$_SESSION['email'] = $user->email();
-		// 				$_SESSION['username'] = $user->username();
-		// 				$_SESSION['password'] = $user->password();
-		// 				$_SESSION['rank'] = $user->rank();
-
-		// 				//Ajout du commentaire en BDD par hydratation
-		// 				$this->_comment = new Comments
-		// 				([
-		// 					'author' => $user->username(),
-		// 					'content' => $_POST['com_content'],
-		// 					'addDate' => new \DateTime()
-		// 				]);
-						
-		// 				$this->_commentsManager->add($this->_comment);
-
-		// 				//Affichage du message cookie flash
-		// 				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre commentaire a bien été envoyé.', 'success');
-						
-		// 				header('Refresh:0, url=article&post_id=' . $post_id);
-		// 				exit();
-		// 			}
-		// 			else
-		// 			{
-		// 				FLASH::setFlash('Le mot de passe et l\'adresse email ne correspondent pas!');
-		// 				header('Refresh:0, url=article&post_id=' . $post_id);
-		// 				exit();
-		// 			}
-		// 		}
-		// 		else
-		// 		{
-		// 			FLASH::setFlash('Veuillez remplir tous les champs correctement !');
-		// 			header('Refresh:0, url=article&post_id=' . $post_id);
-		// 			exit();
-		// 		}
-		// 	}	
-
-		// 	//affichage des bouttons en fonction du rank
-		// 	if(isset($_SESSION['rank']))
-		// 	{
-		// 		if($_SESSION['rank'] == 2)
-		// 		{
-		// 			if(isset($_GET['comment_delete']))
-		// 			{
-		// 				$this->_comment = new Comments
-		// 					([
-		// 						'id' => (int)$_GET['comment_delete']
-		// 					]);	
-		// 				$this->_commentsManager->delete($this->_comment);
-		// 				//Affichage du message cookie flash
-		// 				FLASH::setFlash('Le commentaire a bien été supprimé.', 'success');
-
-		// 				header('Refresh:0, url=article&post_id=' . $post_id);
-		// 				exit();
-		// 			}
-		// 		}
-
-		// 		if($_SESSION['rank'] > 0)
-		// 		{
-		// 			if(isset($_GET['comment_update']))
-		// 			{
-		// 				$commentUpdate = $this->_commentsManager->getUniqueComment($_GET['comment_update']);
-		// 				if($commentUpdate && isset($_POST['com_update']))
-		// 				{
-		// 					$this->_comment = new Comments
-		// 					([
-		// 						'id' => (int)$_GET['comment_update']
-		// 					]);	
-		// 					$this->_commentsManager->update($this->_comment);
-
-		// 					FLASH::setFlash('Le commentaire a bien été mis jour.', 'success');
-		// 					header('Refresh:0, url=article&post_id=' . $post_id);
-		// 					exit();
-		// 				}
-		// 				elseif(!$commentUpdate)
-		// 				{
-		// 					FLASH::setFlash('Le commentaire demandé est inexistant !');
-	 //            			header('Location:articles');
-	 //            			exit();
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// 	if(!headers_sent())
-		// 	{
-		// 		$this->_view = new View('Article');
-
-		// 		if(isset($commentUpdate))
-		// 		{
-		// 			$this->_view->generate(array('post' => $post, 'comments' => $comments, 'user' => $user, 'comment' => $commentUpdate));				
-		// 		}
-		// 		else
-		// 		{
-		// 			$this->_view->generate(array('post' => $post, 'comments' => $comments, 'user' => $user));
-		// 		}
-		// 		exit();			
-		// 	}
-		// }	
-

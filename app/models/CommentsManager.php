@@ -38,11 +38,12 @@ class CommentsManager extends Model
         $request->bindValue(':post_id', $post_id);
 
         $request->execute();
+        $request->closeCursor();
     }
    
     public function delete(Comments $comments)
     {
-        return $this->_db->exec('DELETE FROM comments WHERE id = '.(int) $comments->id());
+        $this->_db->exec('DELETE FROM comments WHERE id = '.(int) $comments->id());
     }
 
     /**
@@ -57,9 +58,10 @@ class CommentsManager extends Model
         $request = $this->_db->prepare('UPDATE comments SET content = :content, updateDate = NOW() WHERE id = :id');
 
         $request->bindValue(':content', nl2br($message));
-        $request->bindValue(':id', $comments->id(), \PDO::PARAM_INT);
+        $request->bindValue(':id', (int) $_GET['commentUpdate'], \PDO::PARAM_INT);
 
         $request->execute();
+        $request->closeCursor();
     }
 
     /**
@@ -67,9 +69,9 @@ class CommentsManager extends Model
      */
     public function getListComments($ref)
     {
-        $request = $this->_db->query('SELECT DISTINCT comments.id, comments.author, comments.content, comments.addDate, comments.updateDate FROM comments JOIN posts WHERE comments.post_id = ' . (int)$ref . ' ORDER BY addDate DESC');
+        $request = $this->_db->query('SELECT DISTINCT comments.id, comments.author, comments.content, DATE_FORMAT(comments.addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(comments.updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM comments JOIN posts WHERE  comments.validationComment = 1 AND comments.post_id = ' . (int)$ref . ' ORDER BY addDate DESC');
 
-        $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Comments');
+        // $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Comments');
 
         $listComments = [];
 
@@ -77,7 +79,7 @@ class CommentsManager extends Model
         {
             $listComments[] = new Posts($data);
         }
-
+// var_dump($listComments); die();
         $request->closeCursor();
         return $listComments;
     }
@@ -89,24 +91,86 @@ class CommentsManager extends Model
      */
     public function getUniqueComment($id)
     {
-        $request = $this->_db->prepare('SELECT id, author, content, addDate, updateDate FROM comments WHERE id = :id');
+        $request = $this->_db->prepare('SELECT id, author, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM comments WHERE id = :id');
         $request->bindValue(':id', $id);
-        $request->execute();
 
         $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Comments');
+        $request->execute();
 
-        $comment = $request->fetch();
-        //Verify the comment existence
-        if($comment != false && $comment->updateDate() != NULL)
+        $data = $request->fetch();
+        $comment = new Comments($data);
+        $request->closeCursor();
+        return $comment;
+    } 
+
+    public function count()
+    {
+        return $this->_db->query('SELECT count(*) FROM comments WHERE validationComment = 0')->fetchColumn();
+    }  
+
+    public function validateCommentList()
+    {
+        $request = $this->_db->query('SELECT id, author, content, addDate FROM comments WHERE validationComment = 0');
+
+        $validateComment = [];
+
+        while($data = $request->fetch())
         {
-            $comment->setAddDate(new \DateTime($comment->addDate()));
-            $comment->setUpdateDate(new \DateTime($comment->updateDate()));
-            return $comment;
+            $validateComment[] = new Comments($data);
         }
-        else
+        $request->closeCursor();
+        return $validateComment;
+    }
+
+    Public function turnValidateCommentOk(Comments $comments)
+    {
+        $request = $this->_db->prepare('UPDATE comments SET validationComment = :validationComment WHERE id = :id');
+
+        $request->bindValue(':id', $comments->id(), \PDO::PARAM_INT);
+        $request->bindValue(':validationComment', 1, \PDO::PARAM_INT);
+
+        $request->execute();
+        $request->closeCursor();
+    }
+
+    public function turnNoValidateComment(Comments $comments)
+    {        
+        $this->_db->exec('DELETE FROM comments WHERE id = '.(int) $comments->id());        
+    }
+
+    public function getCommentByUserId()
+    {
+        $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '';
+        $request = $this->_db->prepare('SELECT DISTINCT comments.id, comments.author, comments.content, DATE_FORMAT(comments.addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(comments.updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate, posts.title FROM comments JOIN posts WHERE comments.author = :author AND posts.id = comments.post_id ORDER BY addDate DESC');
+        $request->bindValue(':author', $username);
+
+        $request->execute();
+
+        $commentByUserId = [];
+
+        while($data = $request->fetch())
         {
-            $comment->setAddDate(new \DateTime($comment->addDate()));
-            return $comment;    
+            $commentByUserId[] = new Comments($data);
         }
-    }    
+        $request->closeCursor();
+        if(isset($commentByUserId))
+        {
+            return $commentByUserId;
+        }
+    }
+
+    public function getAllComments()
+    {
+         $request = $this->_db->query('SELECT DISTINCT id, author, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM comments ORDER BY addDate DESC');
+
+        $allComments = [];
+
+        while ($data = $request->fetch())
+        {
+            $allComments[] = new Posts($data);
+        }
+
+        $request->closeCursor();
+        return $allComments;
+    }
 }

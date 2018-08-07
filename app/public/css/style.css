@@ -1,7 +1,7 @@
 body
 {
-  margin-top: 120px;
-  overflow: auto;
+  margin-top: 220px;
+  /*overflow: auto;*/
 }
 
 .navig
@@ -31,7 +31,7 @@ body
 
 #post_h1_title
 {
-	color: #FFFFFF;
+	color: #18BC9C;
 }
 
 #adminLink:hover
@@ -44,9 +44,11 @@ body
   margin-left: 15px;
 }
 
-.author_com
+.hr_separator
 {
-
+   padding:2px;
+   background:#18BC9C;
+   border:0;
 }
 
 .content_com
@@ -66,40 +68,7 @@ body
 	padding-top: 15px;
 }
 
-/*a
-{
-	color: white;
-}*/
-
-/*td
-{
-  padding: 3px;
-}
-
-table, td, th
-{
-	color: white;
-	border: 1px solid black;
-}
-
-table, th
-{
-	margin:auto;
-	text-align: center;
-	border-collapse: collapse;
-}
-
-table, th
-{
-	border: 3px solid black;
-}
-
-td
-{
-  padding: 3px;
-}*/
-
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   #registerIconBar
   {
   	height: 40px;
@@ -110,5 +79,11 @@ td
   #registerIcon
   {
   	margin: 0px;
+  }
+}
+
+  @media (max-width: 425px) {
+  .smallScreen {
+    display: none;
   }
 }

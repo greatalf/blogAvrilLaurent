@@ -9,7 +9,7 @@ class Posts
 	 * @var array
 	 * @access protected
 	 */
-	protected  $errors = [];
+	// protected  $errors = [];
 
 	/**
 	 * 
@@ -63,10 +63,10 @@ class Posts
 	/**
 	*Constantes concernées par les erreurs pendant l'execution d'une méthode.
 	*/
-	const INVAILABLE_AUTHOR = 1;
-	const INVAILABLE_TITLE = 2;
-	const INVAILABLE_CHAPO = 3;
-	const INVAILABLE_CONTENT = 4;
+	// const INVAILABLE_AUTHOR = 1;
+	// const INVAILABLE_TITLE = 2;
+	// const INVAILABLE_CHAPO = 3;
+	// const INVAILABLE_CONTENT = 4;
 
 	/**
 	 * @access public
@@ -150,7 +150,7 @@ class Posts
 		}
 		else
 		{
-			$this->errors[] = self::INVAILABLE_AUTHOR;
+			// $this->errors[] = self::INVAILABLE_AUTHOR;
 		}
 	}
 
@@ -167,7 +167,7 @@ class Posts
 		}
 		else
 		{
-			$this->errors[] = self::INVAILABLE_TITLE;
+			// $this->errors[] = self::INVAILABLE_TITLE;
 		}
 	}
 
@@ -184,7 +184,7 @@ class Posts
 		}
 		else
 		{
-			$this->errors[] = self::INVAILABLE_CHAPO;
+			// $this->errors[] = self::INVAILABLE_CHAPO;
 		}
 	}
 
@@ -201,7 +201,7 @@ class Posts
 		}
 		else
 		{
-			$this->errors[] = self::INVAILABLE_CONTENT;
+			// $this->errors[] = self::INVAILABLE_CONTENT;
 		}
 	}
 

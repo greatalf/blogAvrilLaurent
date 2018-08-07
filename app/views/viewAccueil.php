@@ -104,28 +104,28 @@ use Laurent\App\Service\Flash;
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Nom</label>
-                                <input type="text" class="form-control" placeholder="Nom*" id="name" name="name" required data-validation-required-message="Entrez votre nom S.V.P." value="<?= isset(htmlspecialchars($_POST['name'])) ? htmlspecialchars($_POST['name']) : '' ?>">
+                                <input type="text" class="form-control" placeholder="Nom*" id="name" name="name" required data-validation-required-message="Entrez votre nom S.V.P." value="<?= isset($_POST['name']) ? htmlspecialchars($_POST['name']) : '' ?>">
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Prénom</label>
-                                <input type="text" class="form-control" placeholder="Prénom*" id="lastname" name="lastname" required data-validation-required-message="Entrez votre prénom S.V.P." value="<?= isset(htmlspecialchars($_POST['lastname'])) ? htmlspecialchars($_POST['lastname']) : '' ?>">
+                                <input type="text" class="form-control" placeholder="Prénom*" id="lastname" name="lastname" required data-validation-required-message="Entrez votre prénom S.V.P." value="<?= isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname']) : '' ?>">
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Email</label>
-                                <input type="email" class="form-control" placeholder="Email*" id="email" name="email" required data-validation-required-message="Entrez votre adresse mail S.V.P." value="<?= isset(htmlspecialchars($_POST['email'])) ? htmlspecialchars($_POST['email']) : '' ?>">
+                                <input type="email" class="form-control" placeholder="Email*" id="email" name="email" required data-validation-required-message="Entrez votre adresse mail S.V.P." value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Message*</label>
-                                <textarea rows="3" class="form-control" placeholder="Message*" id="message" name="message" required data-validation-required-message="Entrez un message S.V.P." value="<?= isset(htmlspecialchars($_POST['message'])) ? htmlspecialchars($_POST['message'] ): '' ?>"></textarea>
+                                <textarea rows="3" class="form-control" placeholder="Message*" id="message" name="message" required data-validation-required-message="Entrez un message S.V.P." value="<?= isset($_POST['message']) ? htmlspecialchars($_POST['message'] ): '' ?>"></textarea>
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
@@ -133,7 +133,7 @@ use Laurent\App\Service\Flash;
                         <div id="success"></div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <button type="submit" class="btn btn-success btn-lg">Envoyer</button>
+                                <a href="http://localhost/Blog_Avril_Laurent/contact"><button type="submit" name="contactButton" class="btn btn-success btn-lg">Envoyer</button></a>
                             </div>
                         </div>
                     </form>

@@ -4,6 +4,7 @@ use Laurent\App\Controllers\ControllerApp;
 use Laurent\App\Controllers\ControllerArticle;
 use Laurent\App\Controllers\ControllerAdmin;
 use Laurent\App\Controllers\ControllerUser;
+use Laurent\App\Service\Security;
 use Laurent\App\Service\Error404;
 
 class Router 
@@ -12,19 +13,26 @@ class Router
 	private $controllerAdmin;
 	private $controllerArticle;
 	private $controllerUser;
+	private $security;
 	private $error;
 
 	public function __construct()
 	{
 		$this->controllerApp = new ControllerApp();
 		$this->controllerArticle = new ControllerArticle();
-		$this->controllerUser = new controllerUser();
-		$this->controllerAdmin = new controllerAdmin();
+		$this->controllerUser = new ControllerUser();
+		$this->controllerAdmin = new ControllerAdmin();
+		$this->security = new Security();
 		$this->error = new Error404();
 	}
 
 	public function routeReq()
 	{
+		// $url = '';
+		if(empty($_GET['url']))
+		{
+			$this->controllerApp->home();
+		}	
 		 try{
 				$url = '';
 				if(isset($_GET['url']))
@@ -32,43 +40,75 @@ class Router
 					$url = explode('/', filter_var($_GET['url'], FILTER_SANITIZE_URL));
 
 					if(session_status() == PHP_SESSION_NONE)
-			    	{
-			   			session_start();
+			    	{			    		
+			   			session_start();	   			
 					}
+
+					//deco auto
+					$this->security->decoSessionAuto(60);
 
 					if(isset($url[1]))
 					{
-						$this->error->errorPage();
-					}				
+						$this->error->errorUrl();
+					}
 
-			        if($url[0] === 'articles')
-			        {
-			            $this->controllerArticle->getAllPosts();
-			        }
-			        elseif($url[0] === 'article')
-			        {
-			        	$this->controllerArticle->getUniquePost();
-			        }
-			        elseif($url[0] === 'deconnexion')
-			        {
-			            $this->controllerUser->deconnexion();
-			        }
-			        elseif($url[0] === 'connexion')
-			        {
-			            $this->controllerUser->connexion();
-			        }
-			        elseif($url[0] === 'register')
-			        {
-			            $this->controllerUser->register();
-			        }
-			        elseif($url[0] === 'accueil')
-			        {
-			            $this->controllerApp->home();
-			        }
-			        elseif($url[0] === 'admin')
-			        {
-			            $this->controllerAdmin->admin();
-			        }
+					switch($url[0])
+					{	
+				        case 'articles':		        
+				            $this->controllerArticle->getAllPosts();
+				            break;			        
+				        case 'article':
+				        	$this->controllerArticle->getUniquePost();
+				        	break;			        
+				        case 'deconnexion':
+				            $this->controllerUser->deconnexion();
+				            break;			        
+				        case 'connexion':
+				            $this->controllerUser->connexion();
+				            break;	
+				        case 'passForgotten':
+				            $this->controllerApp->forgetPass();
+				            break;		        
+				        case 'register':
+				            $this->controllerUser->register();
+				            break;			        
+				        case 'accueil':
+				            $this->controllerApp->home();
+				            break;				        
+				        case 'admin':
+				            $this->controllerAdmin->admin();
+				            break;			        
+				    	case 'postdelete':		
+							$this->controllerAdmin->postDelete();
+							break;			    	
+				    	case 'postupdate':		
+							$this->controllerAdmin->postUpdate();
+							break;				    	
+				    	case 'commentupdate':		
+							$this->controllerArticle->commentUpdate();
+							break;			    	
+				    	case 'commentdelete':		
+							$this->controllerArticle->commentDelete();
+							break;			    	
+				    	case 'commentvalidate':		
+							$this->controllerAdmin->commentValidate();
+							break;			    	
+				    	case 'commentnovalidate':		
+							$this->controllerAdmin->commentNoValidate();
+							break;			    	
+				    	case 'userbanish':		
+							$this->controllerAdmin->userBanish();
+							break;			    	
+				    	case 'upgradeuser':		
+							$this->controllerAdmin->upgradeUser();
+							break;	
+						case 'contact':
+							$this->controllerApp->contact();
+							break;
+						case 'confirm':
+							$this->controllerApp->confirm();
+							break;			    	
+			    	}
 		  		}
 		  	$this->error->errorPage();	
 		  	}	
