@@ -1,3 +1,6 @@
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1309250d02a7457f94003cff32bc86a4)](https://app.codacy.com/app/greatalf/blogAvrilLaurent?utm_source=github.com&utm_medium=referral&utm_content=greatalf/blogAvrilLaurent&utm_campaign=badger)
+
 What you need before installation
 You need Apache, MySQL and PHP: you can download a server (WAMP, MAMP, LAMP, XAMPP).
 
