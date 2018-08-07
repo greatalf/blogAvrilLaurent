@@ -4,6 +4,7 @@ use Laurent\App\Controllers\ControllerApp;
 use Laurent\App\Controllers\ControllerArticle;
 use Laurent\App\Controllers\ControllerAdmin;
 use Laurent\App\Controllers\ControllerUser;
+use Laurent\App\Service\Security;
 use Laurent\App\Service\Error404;
 
 class Router 
@@ -12,6 +13,7 @@ class Router
 	private $controllerAdmin;
 	private $controllerArticle;
 	private $controllerUser;
+	private $security;
 	private $error;
 
 	public function __construct()
@@ -20,11 +22,17 @@ class Router
 		$this->controllerArticle = new ControllerArticle();
 		$this->controllerUser = new ControllerUser();
 		$this->controllerAdmin = new ControllerAdmin();
+		$this->security = new Security();
 		$this->error = new Error404();
 	}
 
 	public function routeReq()
 	{
+		// $url = '';
+		if(empty($_GET['url']))
+		{
+			$this->controllerApp->home();
+		}	
 		 try{
 				$url = '';
 				if(isset($_GET['url']))
@@ -32,60 +40,65 @@ class Router
 					$url = explode('/', filter_var($_GET['url'], FILTER_SANITIZE_URL));
 
 					if(session_status() == PHP_SESSION_NONE)
-			    	{
-			   			session_start();
+			    	{			    		
+			   			session_start();	   			
 					}
+
+					//deco auto
+					$this->security->decoSessionAuto(60);
 
 					if(isset($url[1]))
 					{
-						var_dump($url[1]);
-						$this->error->errorPage();
-					}				
+						$this->error->errorUrl();
+					}
 
 					switch($url[0])
 					{	
-				        case 'articles':				        
+				        case 'articles':		        
 				            $this->controllerArticle->getAllPosts();
-				            break;				        
+				            break;			        
 				        case 'article':
 				        	$this->controllerArticle->getUniquePost();
-				        	break;				        
+				        	break;			        
 				        case 'deconnexion':
 				            $this->controllerUser->deconnexion();
-				            break;				        
+				            break;			        
 				        case 'connexion':
 				            $this->controllerUser->connexion();
-				            break;				        
+				            break;	
+				        case 'passForgotten':
+				            $this->controllerUser->forgetPass();
+				            break;		        
 				        case 'register':
 				            $this->controllerUser->register();
-				            break;				        
+				            break;			        
 				        case 'accueil':
 				            $this->controllerApp->home();
 				            break;				        
 				        case 'admin':
 				            $this->controllerAdmin->admin();
-				            break;				        
+				            break;			        
 				    	case 'postdelete':		
 							$this->controllerAdmin->postDelete();
-							break;				    	
+							break;			    	
 				    	case 'postupdate':		
 							$this->controllerAdmin->postUpdate();
 							break;				    	
 				    	case 'commentupdate':		
 							$this->controllerArticle->commentUpdate();
-							break;				    	
+							break;			    	
 				    	case 'commentdelete':		
 							$this->controllerArticle->commentDelete();
-							break;				    	
+							break;			    	
 				    	case 'commentvalidate':		
 							$this->controllerAdmin->commentValidate();
-							break;				    	
+							break;			    	
 				    	case 'commentnovalidate':		
 							$this->controllerAdmin->commentNoValidate();
-							break;				    	
+							break;			    	
 				    	case 'userbanish':		
 							$this->controllerAdmin->userBanish();
-							break;				    	
+							break;			    	
 				    	case 'upgradeuser':		
 							$this->controllerAdmin->upgradeUser();
 							break;	

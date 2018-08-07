@@ -5,8 +5,10 @@ use Laurent\App\Views\View;
 use Laurent\App\Models\Users;
 use Laurent\App\Models\UsersManager;
 use Laurent\App\Models\PostsManager;
+use Laurent\App\Models\CommentsManager;
 use Laurent\App\Models\Model;
 use Laurent\App\Controllers\ControllerUser;
+use Laurent\App\Controllers\ControllerAdmin;
 use Laurent\App\Service\Flash;
 use Laurent\App\Service\Security;
 
@@ -18,6 +20,7 @@ class Profile
 		$this->_db = $_db;
 		// $this->_posts = new PostsManager($_db);
 		$this->_postsManager = new PostsManager($_db);
+		$this->_commentsManager = new CommentsManager($_db);
 		$this->_usersManager = new UsersManager($_db);
 		$this->_security = new Security();
 		$this->_mail = new Mail();
@@ -91,7 +94,7 @@ class Profile
 
 			$_SESSION['newUser'] = $this->_usersManager->add($this->_user);
 
-			if($_SESSION['newUser'] != false && !isset($_SESSION['auth']))
+			if($_SESSION['newUser'] != false && !($_SESSION['auth']))
 			{
 				$this->_mail->sendMailUserAdded();
 			}
@@ -108,12 +111,14 @@ class Profile
 				empty($_POST['profil_confirm_pass']))
 			{	
 				FLASH::setFlash('Remplissez tous les champs correctement !');
-				$this->renderViewAdmin();
+				$this->_controllerAdmin = new ControllerAdmin;
+				$this->_controllerAdmin->renderViewAdmin();
 			}
 			if($_POST['profil_pass'] != $_POST['profil_confirm_pass'])
 			{
 				FLASH::setFlash('Le mot de passe et la confirmation de mot de passe ne correspondent pas!');
-				$this->renderViewAdmin();
+				$this->_controllerAdmin = new ControllerAdmin;
+				$this->_controllerAdmin->renderViewAdmin();
 			}
 			$this->_security->securizationCsrf();
 
@@ -147,7 +152,7 @@ class Profile
 			$this->_mail->sendMailUserUpdated();
 			FLASH::setFlash('Votre profil a bien été mis à jour, un mail de confirmation vous a été envoyé.', 'success');
 		}
-		$this->renderViewAdmin();
+		$this->renderViewRegister();
 	}
 
 	// public function addUser()
@@ -178,16 +183,22 @@ class Profile
 		exit();
 	}
 
-	public function renderViewAdmin()
-	{
-		$userInfos = isset($_SESSION['id']) ? $this->_usersManager->getUserInfos($_SESSION['id']) : '';
-    	$allUsers = $this->_usersManager->getUsersList();
-    	$postList = $this->_postsManager->getList(0,25);
+	// public function renderViewAdmin()
+	// {
+	// 	$userInfos = isset($_SESSION['id']) ? $this->_usersManager->getUserInfos($_SESSION['id']) : '';
+ //    	$allUsers = $this->_usersManager->getUsersList();
+ //    	$postList = $this->_postsManager->getList(0,25);
 
-		if(!headers_sent())
-		{						
-				$this->_view = new View('admin');		
-				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers));		
-		}
-	}
+ //    	$validateComment = $this->_commentsManager->validateCommentList();
+	// 	$usersCount = $this->_usersManager->count();
+	// 	$postCount = $this->_postsManager->count();
+	// 	$commentValidateCount = $this->_commentsManager->count();
+ //    	// var_dump($validateComment); die();
+
+	// 	if(!headers_sent())
+	// 	{						
+	// 			$this->_view = new View('admin');		
+	// 			$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers));		
+	// 	}
+	// }
 }

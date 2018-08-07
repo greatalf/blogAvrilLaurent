@@ -38,4 +38,16 @@ class Security
 			return(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
 		}	
 	}
+
+	public function decoSessionAuto($minutes)
+	{
+		if(isset($_SESSION['lastTime']))
+		{			   				
+			if((time() - $_SESSION['lastTime']) > $minutes*60)
+			{
+				header('Refresh:0, url=deconnexion');
+			}
+			$_SESSION['lastTime'] = time();
+		}
+	}
 }

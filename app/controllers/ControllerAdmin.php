@@ -9,10 +9,10 @@ use \Laurent\App\Models\CommentsManager;
 use \Laurent\App\Models\UsersManager;
 use \Laurent\App\Models\Model;
 use \Laurent\App\Controllers\ControllerArticle;
-use Laurent\App\Views\View;
-use Laurent\App\Service\Flash;
-use Laurent\App\Service\Security;
-use Laurent\App\Service\Profile;
+use \Laurent\App\Views\View;
+use \Laurent\App\Service\Flash;
+use \Laurent\App\Service\Security;
+use \Laurent\App\Service\Profile;
 
 class ControllerAdmin extends ControllerMain
 {
@@ -73,19 +73,27 @@ class ControllerAdmin extends ControllerMain
 		$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
     	$allUsers = $this->_usersManager->getUsersList();
     	$postList = $this->_postsManager->getList(0,25);
+    	// var_dump($postList->id());
 
     	$validateComment = $this->_commentsManager->validateCommentList();
 		$usersCount = $this->_usersManager->count();
 		$postCount = $this->_postsManager->count();
 		$commentValidateCount = $this->_commentsManager->count();
+		$getCommentById = $this->_commentsManager->getCommentByUserId();
+		$allComments = $this->_commentsManager->getAllComments();
 
 		if(!headers_sent())
 		{		
 			if($_SESSION['rank'] == 2)	
 			{				
 				$this->_view = new View('admin');		
-				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers, 'validateComment' => $validateComment, 'usersCount' => $usersCount, 'postCount' => $postCount, 'commentValidateCount' => $commentValidateCount));		
-			}		
+				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'allUsers' => $allUsers, 'validateComment' => $validateComment, 'usersCount' => $usersCount, 'postCount' => $postCount, 'commentValidateCount' => $commentValidateCount, 'allComments' => $allComments));		
+			}	
+			if(isset($getCommentById))
+			{
+				$this->_view = new View('admin');		
+				$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos, 'getCommentById' => $getCommentById, 'allComments' => $allComments));
+			}	
 			$this->_view = new View('admin');		
 			$this->_view->generate(array('postList' => $postList, 'userInfos' => $userInfos));	
 		}

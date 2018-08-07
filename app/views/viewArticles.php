@@ -10,7 +10,6 @@ foreach($posts as $post) :
 <p><?=  strlen($post->content()) <= 150 ? $post->content() : substr($post->content(), 0, 150) . '...' ?></p>
 <p><?= $post->updateDate() != NULL ? 'Écrit le ' . $post->addDate() . ' par <em> ' . $post->author() . '</em>, modifié le ' . $post->updateDate() : 'Écrit le ' . $post->addDate()?></p>
 <a href="article&post_id=<?= $post->id() ?>"><p id="read_all">Lire la suite...</p></a>
-<?php //boutton_update($post->id()) . boutton_del($post->id()) ?>
 <hr>
 <?php endforeach; ?>
 <br>

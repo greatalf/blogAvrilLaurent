@@ -28,6 +28,7 @@ if(isset($_COOKIE['BRUTEFORCE'])) :
     <label for="pass">Mot de Passe</label>
     <input type="password" name="connect_pass" value="" class="form-control" id="pass" placeholder="Mot de Passe">
   </div>
+  <p><a href="http://localhost/Blog_Avril_Laurent/passForgotten">Mot de passe oublié</a></p>
   <button type="submit" class="btn btn-primary" name="connect_submit">Se connecter</button>
 </form>
 <?php endif ?>
