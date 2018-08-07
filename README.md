@@ -1,3 +1,4 @@
+BLOG AVRIL LAURENT/PROJET 5
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c10c2d9e7d7c4c48aa0d4794b33f6dfc)](https://www.codacy.com/app/greatalf/blogAvrilLaurent?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=greatalf/blogAvrilLaurent&amp;utm_campaign=Badge_Grade)
 
 What you need before installation
