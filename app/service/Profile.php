@@ -122,11 +122,11 @@ class Profile
 			$this->_user = new Users
 			([
 				'id' => $_SESSION['id'],
-				'lastname' => htmlspecialchars($_POST['profil_lastname']),
-				'firstname' => htmlspecialchars($_POST['profil_firstname']), 
-				'username' => htmlspecialchars($_POST['profil_username']), 
-				'email' => htmlspecialchars($_POST['profil_email']), 
-				'password' => htmlspecialchars($_POST['profil_pass']) 
+				'lastname' => $_POST['profil_lastname'],
+				'firstname' => $_POST['profil_firstname'], 
+				'username' => $_POST['profil_username'], 
+				'email' => $_POST['profil_email'], 
+				'password' => $_POST['profil_pass'] 
 			]);
 			
 			$this->_controllerUser = new ControllerUser;

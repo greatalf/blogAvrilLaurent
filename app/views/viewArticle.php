@@ -54,7 +54,7 @@ foreach ($comments as $comment) :
 
 <?php foreach($getCommentById as $getComment) : ?>
 <?php if((isset($getCommentById) && $comment->author() == $getComment->author() && isset($_SESSION['tokenCsrf']))) : ?>
-    <?php echo '<a style="color:white;" href="commentupdate&commentUpdate=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-warning btn-sm">Modifier</boutton></a> | <a style="color:white;" href="commentdelete&commentDelete=' . $comment->id() . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-info btn-sm">Supprimer</boutton></a>'; break;?>
+    <?php echo '<a style="color:white;" href="commentupdate&commentUpdate=' . htmlspecialchars($comment->id()) . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-warning btn-sm">Modifier</boutton></a> | <a style="color:white;" href="commentdelete&commentDelete=' . htmlspecialchars($comment->id()) . '&post_id=' . $onePost->id() . '&tokenCsrf='. $_SESSION['tokenCsrf'] .'"><boutton class="btn btn-info btn-sm">Supprimer</boutton></a>'; break;?>
 <?php endif; ?>
 <?php endforeach; ?>    
 <hr>

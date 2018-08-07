@@ -135,10 +135,10 @@ class ControllerAdmin extends ControllerMain
 				}				
 				$this->_post = new Posts
 				([
-					'author' => $_POST['post_author'],
-					'title' => $_POST['post_title'],
-					'chapo' => $_POST['post_chapo'],
-					'content' => $_POST['post_content']
+					'author' => htmlspecialchars($_POST['post_author']),
+					'title' => htmlspecialchars($_POST['post_title']),
+					'chapo' => htmlspecialchars($_POST['post_chapo']),
+					'content' => htmlspecialchars($_POST['post_content'])
 				]);
 
 				$this->_postsManager->update($this->_post);

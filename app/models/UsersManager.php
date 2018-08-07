@@ -34,7 +34,7 @@ class UsersManager extends Model
 			isset($_POST['regist_firstname']) &&
 			isset($_POST['regist_email']) &&
 			isset($_POST['regist_username']) &&
-			isset($_POST['regist_password']) &&
+			isset($_POST['regist_password'])&&
 			isset($_POST['regist_password_confirm']))
 		{
 			$request = $this->_db->prepare('INSERT INTO users (lastname, firstname, email, username, password, rank, confirmation_token) VALUES(?, ?, ?, ?, ?, ?, ?)');
@@ -265,7 +265,7 @@ class UsersManager extends Model
 				$_SESSION['rank'] = $user->rank();
 				$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));
 			}
-			FLASH::setFlash('Validez votre adresse email avant votre première connexion');
+			FLASH::setFlash('Validez votre adresse email avant votre première connexion', 'success');
 			header('Location: connexion');
 			exit();
 		}

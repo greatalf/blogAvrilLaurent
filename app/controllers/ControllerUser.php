@@ -39,7 +39,7 @@ class ControllerUser extends ControllerMain
 	{
 		if(isset($_SESSION['auth']))
 		{
-			FLASH::setFlash('Vous êtes déjà connecté ' . $_SESSION['username'] . '...', 'success');
+			FLASH::setFlash('Vous êtes connecté ' . $_SESSION['username'] . '...', 'success');
 			header('Location: admin');
 			exit();
 		}
