@@ -6,13 +6,6 @@ class Users
 {
 	/**
 	 * 
-	 * @var array
-	 * @access protected
-	 */
-	protected $errors = [];
-
-	/**
-	 * 
 	 * @var int
 	 * @access protected
 	 */
@@ -73,15 +66,7 @@ class Users
 	 * @access protected
 	 */
 	protected $timeToDelete;
-
-	/**
-	*Constantes concernées par les erreurs pendant l'execution d'une méthode.
-	*/
-	const INVAILABLE_LASTNAME = 1;
-	const INVAILABLE_FIRSTNAME = 2;
-	const INVAILABLE_EMAIL = 3;
-	const INVAILABLE_USERNAME = 4;
-
+	
 	/**
 	 * @access public
 	 * @param array $values 

@@ -56,6 +56,7 @@ FLASH::flash();
   </div>
   <button type="submit" name="profil_modify" class="btn btn-primary">Mettre à jour</button>
 
+<?php if(isset($getCommentById)) : ?>
 <h3>Les commentaires persos : </h3>
 <div>
 	<table class="table">
@@ -77,12 +78,12 @@ FLASH::flash();
 			<td><?= $getComment->content() ?>
 		    <td>
 		    	<button class="btn btn-info btn-sm">
-		    		<a style="color:white;" href="commentupdate&commentUpdate=<?= $getComment->id() ?>&post_id=<?=  /* le num de post_id est pas bon.*/ $getComment->id() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
+		    		<a style="color:white;" href="commentupdate&commentUpdate=<?= $getComment->id() ?>&post_id=<?=$getComment->chapo() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
 		    		Modifier
 		    		</a>
 		    	</button> | 
 		    	<button class="btn btn-warning btn-sm">
-		    		<a style="color:white;" href="commentdelete&commentDelete=<?= $getComment->id() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
+		    		<a style="color:white;" href="commentdelete&commentDelete=<?= $getComment->id() ?>&post_id=<?=$getComment->chapo() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
 		    		Supprimer
 		    		</a>
 		    	</button>
@@ -91,7 +92,7 @@ FLASH::flash();
 <?php endforeach; ?>
 	</table>
 </div>
-
+<?php endif; ?>
 
 
 <?php if($_SESSION['rank'] == 2) : ?>
