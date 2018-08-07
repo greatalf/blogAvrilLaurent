@@ -21,6 +21,6 @@ Then create your database as follows:
 
 First: http: // localhost: 8888 / phpmyadmin / (MAMP) or http: // localhost / phpmyadmin / (WAMP).
 Click on "New Database".
-enter "Project5" and click "create".
+enter "my_blog" and click "create".
 Once your database is created, click on it and click on "Import".
 Select a file and choose "my_blog.sql" in the project root file.
