@@ -9,18 +9,18 @@ Installation
 Download the project or clone it in the precise server file (www for Windows, htdocs for MAC ...).
 
 Purpose
-This is project number 5 of the "PHP / Symfony" Openclassrooms course. The main goal is to create my own blog with PHP. No frameworks such as Laravel or Symfony for this blog. Everything must be made entirely by hand.
+This is the 5th project of the "PHP / Symfony" Openclassrooms course. The main goal is to create my own blog with PHP. No frameworks such as Laravel or Symfony for this blog. Everything must be made entirely by hand.
 
 Open model / Manager.php and verify this data (replace the password if necessary).
 
 host = localhost
-base = Project5
+base = my_blog
 'root' (this is the default user name).
-'root' (this is the default password with MAMP and MAC OS: if you are using WAMP and Windows, clear the password).
+'' (this is the default password with WAMP and MAC OS: if you are using MAMP and Apple, clear the password, put 'root').
 Then create your database as follows:
 
 First: http: // localhost: 8888 / phpmyadmin / (MAMP) or http: // localhost / phpmyadmin / (WAMP).
 Click on "New Database".
 enter "Project5" and click "create".
 Once your database is created, click on it and click on "Import".
-Select a file and choose "db.sql" in the project root file.
+Select a file and choose "my_blog.sql" in the project root file.
