@@ -134,7 +134,14 @@ class PostsManager extends Model
      */
 	public function getUnique($post_id)
 	{
-		$post_id = isset($_GET['post_id']) ? $_GET['post_id'] : '';
+		if(isset($_GET['postUpdate']))
+		{
+			$post_id = htmlspecialchars($_GET['postUpdate']);
+		}
+		if(isset($_GET['post_id']))
+		{
+			$post_id = htmlspecialchars($_GET['post_id']);
+		}
 		$request = $this->_db->prepare('SELECT id, author, title, chapo, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM posts WHERE id = :id');
 		$request->bindValue(':id', $post_id);
 		$request->execute();

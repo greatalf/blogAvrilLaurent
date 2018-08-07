@@ -57,7 +57,7 @@ class ControllerApp extends ControllerMain
 	{
 		if(isset($_SESSION['auth']))
 		{
-			FLASH::setFlash('Vous êtes déjà connecté ' . $_SESSION['username'] . '...', 'success');
+			FLASH::setFlash('Vous êtes connecté ' . $_SESSION['username'] . '...', 'success');
 			header('Location: admin');
 			exit();
 		}
@@ -120,7 +120,7 @@ class ControllerApp extends ControllerMain
 					$this->_view->generate(NULL);
 					exit();
 				}
-				if($_POST['pass1'] != $_POST['pass2'])
+				if(htmlspecialchars($_POST['pass1']) != htmlspecialchars($_POST['pass2']))
 				{
 					FLASH::setFlash('Les mots de passe doivent être identiques!');
 					header('Refresh:0');

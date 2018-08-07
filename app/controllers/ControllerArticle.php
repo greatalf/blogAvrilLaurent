@@ -53,7 +53,7 @@ class ControllerArticle extends ControllerMain
 				$this->_postsManager->add($this->_post);
 	
 				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre nouvel article a bien été envoyé.', 'success');
-				header('Refresh:0');
+				header('admin');
 				exit();
 			}	
 			FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
@@ -113,7 +113,7 @@ class ControllerArticle extends ControllerMain
 				$this->_comment = new Comments
 					([
 						'author' => $_SESSION['username'],
-						'content' => $_POST['com_content'],
+						'content' => htmlspecialchars($_POST['com_content']),
 						'addDate' => new \DateTime()
 					]);
 
@@ -160,7 +160,7 @@ class ControllerArticle extends ControllerMain
 				$this->_comment = new Comments
 				([
 					'id' => (int) $_GET['commentUpdate'],
-					'content' => $_POST['com_content']
+					'content' => htmlspecialchars($_POST['com_content'])
 				]);
 
 				$this->_commentsManager->update($this->_comment);

@@ -18,7 +18,7 @@ class Mail
 		$header.='Content-Type:text/html; charset="uft-8"'."\n";
 		$header.="Content-Transfer-Encoding: 8bit";
 
-		$to = $_POST['regist_email'];
+		$to = htmlspecialchars($_POST['regist_email']);
 		$subject = 'Confirmation de votre inscription';
 		$message = 
 			'<html>
@@ -51,7 +51,7 @@ class Mail
 		$header.='Content-Type:text/html; charset="uft-8"'."\n";
 		$header.="Content-Transfer-Encoding: 8bit";
 
-		$to = $_POST['profil_email'];
+		$to = htmlspecialchars($_POST['profil_email']);
 		$subject = 'Modification de votre profil';
 		$message = 
 			'<html>
@@ -81,7 +81,7 @@ class Mail
 	public function contactMail()
 	{
 		$header="MIME-Version: 1.0\r\n";
-		$header.="From:" . $_POST['email'] . ""."\n";
+		$header.="From:" . htmlspecialchars($_POST['email']) . ""."\n";
 		$header.='Content-Type:text/html; charset="uft-8"'."\n";
 		$header.="Content-Transfer-Encoding: 8bit";
 
@@ -95,8 +95,8 @@ class Mail
 					<p>Il est de la part de ' . strtoupper(htmlspecialchars($_POST['name'])) . ' ' . ucfirst(htmlspecialchars($_POST['lastname'])) . '.</p>
 				</header>
 				<body>
-					Cette personne est joignable à l\'adresse email suivante : ' . $_POST['email'] . '. <br>
-					Voici son message : ' . $_POST['message'] . '
+					Cette personne est joignable à l\'adresse email suivante : ' . htmlspecialchars($_POST['email']) . '. <br>
+					Voici son message : ' . htmlspecialchars($_POST['message']) . '
 				</body>
 			</html>';
 
@@ -120,8 +120,8 @@ class Mail
 		$header.='Content-Type:text/html; charset="uft-8"'."\n";
 		$header.="Content-Transfer-Encoding: 8bit";
 
-		$to = $_POST['connect_email'];
-		$subject = 'Confirmation de votre inscription';
+		$to = htmlspecialchars($_POST['connect_email']);
+		$subject = 'Reset de votre mot de passe';
 		$message = 
 			'<html>
 				<header>

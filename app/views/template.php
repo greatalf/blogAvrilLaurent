@@ -110,10 +110,11 @@
         <div class="footer-above">
             <div class="container">
                 <div class="row">
-                    <div class="footer-col col-md-4">
-                        <?php if(isset($_SESSION['auth'])): ?>
-                            <h3><a href="http://localhost/Blog_Avril_Laurent/admin">>Espace administration<</a></h3>
-                        <?php endif; ?>
+                    <div class="footer-col col-md-4">     
+                        <h3>
+                            <a href="http://localhost/Blog_Avril_Laurent/admin">>Espace administration<
+                            </a>
+                        </h3>
                         <h3>Localisation</h3>
                         <p>241, Boulevard Sénardière
                             <br>Paris, France</p>
