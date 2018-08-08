@@ -24,3 +24,14 @@ Click on "New Database".
 enter "my_blog" and click "create".
 Once your database is created, click on it and click on "Import".
 Select a file and choose "my_blog.sql" in the project root file.
+
+It is also necessary to config https://mailtrap.io in order to receive in local, all the mails sent since the application.
+Here are the configs example : 
+
+SMTP
+Host:	smtp.mailtrap.io
+Port:	25 or 465 or 2525
+Username:	345fb3d7cb7ae0
+Password:	e3a7c57c64ec5f
+Auth:	PLAIN, LOGIN and CRAM-MD5
+TLS:	Optional
