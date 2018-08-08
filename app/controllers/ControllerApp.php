@@ -55,6 +55,13 @@ class ControllerApp extends ControllerMain
 
 	public function forgetPass()
 	{
+		if(isset($_SESSION['auth']))
+		{
+			FLASH::setFlash('Vous êtes connecté ' . $_SESSION['username'] . '...', 'success');
+			header('Location: admin');
+			exit();
+		}
+		
 		if(isset($_POST['connect_submit']))
 		{
 			if(empty($_POST['connect_email']))
@@ -63,24 +70,19 @@ class ControllerApp extends ControllerMain
 				header('Refresh:0, url=http://localhost/Blog_Avril_Laurent/passForgotten');
 				exit();	
 			}
-			if(isset($_SESSION['auth']))
-			{
-				FLASH::setFlash('Vous êtes déjà connecté ' . $_SESSION['username'] . '...', 'success');
-				header('Location: admin');
-				exit();
-			}
+			
 			$this->_security->noAccessBecauseBruteForce();
 			sleep(1);
-			$this->_security->securizationCsrf();
 
 			$emailExist = $this->_usersManager->checkMailExistance();
 			if($emailExist->id() != NULL)
 			{
 				$_SESSION['id'] = $emailExist->id();
 				$_SESSION['username'] = $emailExist->username();
-				setcookie('token', md5(time()*rand(1,1000)), time()+1800);
+				$_SESSION['tokenCsrf'] = md5(time()*rand(1,1000));
 
 				$this->_mail->forgetPassMail();
+
 			}
 			else
 			{
@@ -89,10 +91,72 @@ class ControllerApp extends ControllerMain
 				$this->_view->generate(NULL);
 				exit();
 			}
-		FLASH::setFlash('Un email de changement de mot de passe vous a été envoyé. Attention il est valide 30 minutes', 'success');
-		$this->_view = new View('connexion');
+		FLASH::setFlash('Un email de reset de votre mot de passe vous a été envoyé.', 'success');			
+		}
+	$this->resetPass();
+
+	$this->_view = new View('forgottenPass');		
+	$this->_view->generate(NULL);
+	exit();	
+	}
+
+	public function resetPass()
+	{
+		if(isset($_GET['user_id']) && isset($_GET['tokenCsrf']))
+		{
+			if($_GET['tokenCsrf'] != $_SESSION['tokenCsrf'])
+			{
+				FLASH::setFlash('Le lien est obsolète!');
+				$this->_view = new View('forgottenPass');		
+				$this->_view->generate(NULL);
+				exit();
+			}
+			if(isset($_POST['forget_password']))
+			{
+				if(empty($_POST['pass1']) || empty($_POST['pass2']))
+				{
+					FLASH::setFlash('Remplissez tous les champs correctement!');
+					$this->_view = new View('resetPass');	
+					$this->_view->generate(NULL);
+					exit();
+				}
+				if(htmlspecialchars($_POST['pass1']) != htmlspecialchars($_POST['pass2']))
+				{
+					FLASH::setFlash('Les mots de passe doivent être identiques!');
+					header('Refresh:0');
+					exit();
+				}	
+				else
+				{
+					$userRes = $this->_usersManager->getUserInfos($_GET['user_id']);
+
+					$this->_user = new Users
+					([
+						'id' => $userRes->id(),
+						'lastname' => $userRes->lastname(),
+						'firstname' => $userRes->firstname(),
+						'email' => $userRes->email(),
+						'username' => $userRes->username(),
+						'password' => htmlspecialchars($_POST['pass1']),
+						'rank' => $userRes->rank(),
+						'confirmedAt' => $userRes->confirmedAt()
+					]);
+					$this->_usersManager->update($this->_user);
+				}				
+				if($_GET['user_id'] != $_SESSION['id'])
+				{
+					FLASH::setFlash('Utilisateur erroné!');
+					header('Location: connexion');
+					exit();							
+				}				
+
+				FLASH::setFlash('Votre mot de passe a été mis à jour.', 'success');
+				header('Location: connexion');
+				exit();
+			}	
+		$this->_view = new View('resetPass');	
 		$this->_view->generate(NULL);
-		exit();	
+		exit();		
 		}
 	}
 }

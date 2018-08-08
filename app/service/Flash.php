@@ -21,11 +21,10 @@ class Flash
 		{
 		?>
 			<div class="alert alert-<?= $_SESSION['flash']['type'] ?>">
-				<a class="close">x</a>
+				<!-- <a class="close">x</a> -->
 				<?= $_SESSION['flash']['message'] ?>
 			</div>
 		<?php
-		// D::V($_SESSION['flash']);
 		}
 		unset($_SESSION['flash']);
 	}
@@ -36,7 +35,7 @@ class Flash
 		{
 		?>
 			<div class="alert alert-<?= $type ?>">
-				<a class="close">x</a>
+				<!-- <a class="close">x</a> -->
 				<?= $_COOKIE["$value"] ?>
 			</div>
 		<?php

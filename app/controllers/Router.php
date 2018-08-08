@@ -28,7 +28,6 @@ class Router
 
 	public function routeReq()
 	{
-		// $url = '';
 		if(empty($_GET['url']))
 		{
 			$this->controllerApp->home();
@@ -44,7 +43,7 @@ class Router
 			   			session_start();	   			
 					}
 
-					//deco auto
+					//deconnexion auto
 					$this->security->decoSessionAuto(60);
 
 					if(isset($url[1]))
@@ -68,6 +67,9 @@ class Router
 				            break;	
 				        case 'passForgotten':
 				            $this->controllerApp->forgetPass();
+				            break;
+				        case 'resetPass':
+				            $this->controllerApp->resetPass();
 				            break;		        
 				        case 'register':
 				            $this->controllerUser->register();
@@ -102,6 +104,9 @@ class Router
 				    	case 'upgradeuser':		
 							$this->controllerAdmin->upgradeUser();
 							break;	
+						case 'downgradeuser':		
+							$this->controllerAdmin->downgradeUser();
+							break;
 						case 'contact':
 							$this->controllerApp->contact();
 							break;
@@ -114,7 +119,7 @@ class Router
 		  	}	
 			catch(Exception $e)
 			{
-	  		 	echo 'Erreur : ' . $e->getMessage();
+	  		 	echo 'Erreur : ' . htmlspecialchars($e->getMessage());
 			}
 	}
 }

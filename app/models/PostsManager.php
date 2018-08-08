@@ -91,7 +91,6 @@ class PostsManager extends Model
 		}
 
 		$request = $this->_db->query($sql);
-		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
 		$posts = [];
 
 		while ($data = $request->fetch())
@@ -135,40 +134,23 @@ class PostsManager extends Model
      */
 	public function getUnique($post_id)
 	{
-		$post_id = isset($_GET['post_id']) ? $_GET['post_id'] : '';
+		if(isset($_GET['postUpdate']))
+		{
+			$post_id = htmlspecialchars($_GET['postUpdate']);
+		}
+		if(isset($_GET['post_id']))
+		{
+			$post_id = htmlspecialchars($_GET['post_id']);
+		}
 		$request = $this->_db->prepare('SELECT id, author, title, chapo, content, DATE_FORMAT(addDate, \'%d/%m/%Y à %Hh%i\') AS addDate, DATE_FORMAT(updateDate, \'%d/%m/%Y à %Hh%i\') AS updateDate FROM posts WHERE id = :id');
 		$request->bindValue(':id', $post_id);
 		$request->execute();
 
-		// $request->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, 'Posts');
-
 		$data = $request->fetch();
-
 		$post = new Posts($data);
 		$request->closeCursor();
 
-		// var_dump($post); die();
-
 		return $post;
-	}
-
-    /**
-     * Méthode permettant d'enregistrer une news.
-     * @param Posts $posts
-     * @return void
-     * @see self::add()
-     * @see self::update()
-     */
-	public function save(Posts $posts)
-	{
-	  if ($posts->isValable())
-	  {
-	    $posts->isNew() ? $this->add($posts) : $this->update($posts);
-	  }
-	  else
-	  {
-	    throw new RuntimeException('L\'article doit être valide pour être enregistrée');
-	  }
 	}
 
 	public function count()

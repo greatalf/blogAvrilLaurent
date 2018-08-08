@@ -39,7 +39,7 @@ class ControllerUser extends ControllerMain
 	{
 		if(isset($_SESSION['auth']))
 		{
-			FLASH::setFlash('Vous êtes déjà connecté ' . $_SESSION['username'] . '...', 'success');
+			FLASH::setFlash('Vous êtes connecté ' . $_SESSION['username'] . '...', 'success');
 			header('Location: admin');
 			exit();
 		}
@@ -52,7 +52,7 @@ class ControllerUser extends ControllerMain
 
 				$this->_usersManager->makeConnexionOfUser();
 
-				if(isset($_SESSION['username']))
+				if(isset($_SESSION['auth']))
 				{
 					FLASH::setFlash('Bienvenue, ' . $_SESSION['username'] . ' !', 'success');
 					header('Location: admin');
@@ -112,7 +112,6 @@ class ControllerUser extends ControllerMain
 		$countPseudo = $this->_usersManager->checkPseudo();
 		if($countPseudo > 0)
 		{
-			die('pseudo compté');
 			FLASH::setFlash('Ce pseudo est déjà utilisé.');
 			if(isset($_POST['profil_username']))
 			{
@@ -129,7 +128,6 @@ class ControllerUser extends ControllerMain
 		$this->_controllerAdmin = new ControllerAdmin;
 		unset($countEmail);
 		$countEmail = $this->_usersManager->checkEmail();
-		// var_dump($countEmail); die();
 		if($countEmail > 0)
 		{
 			FLASH::setFlash('Cette adresse Email est déjà utilisée.');
@@ -182,62 +180,4 @@ class ControllerUser extends ControllerMain
 		$this->_profile = new Profile();
 		$this->_profile->registerProfile();
 	}
-
-	// public function sendMail()
-	// {		
-	// 	$header="MIME-Version: 1.0\r\n";
-	// 	$header.="From:support@avril-laurent.fr"."\n";
-	// 	$header.='Content-Type:text/html; charset="uft-8"'."\n";
-	// 	$header.="Content-Transfer-Encoding: 8bit";
-
-	// 	$to = $_POST['regist_email'];
-	// 	$subject = 'Confirmation de votre inscription';
-	// 	$message = 
-	// 		'<html>
-	// 			<header>
-	// 				<h1>Confirmation de votre inscription</h1>
-	// 					</header>
-	// 					<body>
-	// 						Bonjour ' . $_POST['regist_username'] . ', pour valider votre inscription au blog de Laurent AVRIL, merci de cliquer sur le lien suivant <a href="http://localhost/Blog_Avril_Laurent/confirm&user_id=' .  $GLOBALS['newUser'] . '&confirmation_token=' . $_SESSION['token'] . '">je confirme mon inscription</a>
-	// 			</body>
-	// 		</html>';
-
-	// 	$mail = mail($to, $subject, $message, $header);
-	// 	if(!$mail)
-	// 	{
-	// 		FLASH::setFlash('L\'inscription a échoué. Vérifiez votre connexion et réessayer ultérieurement.');
-	// 		$this->_view = new View('Register');
-	// 		$this->_view->generate(NULL);
-	// 		exit();
-	// 	}
-
-	// 	FLASH::setFlash('Un mail de confirmation vient de vous être envoyé.', 'success');
-	// 	$this->_view = new View('Connexion');
-	// 	$this->_view->generate(NULL);
-	// 	exit();
-		// $this->_view = new View('Connexion');
-		// $this->_view->generate(NULL);
-	// }
-
-
-
-			
-		// 	if(isset($_SESSION['auth']))
-		// 	{
-		// 		header('Location:articles');
-		// 		exit();
-		// 	}
-		// 	else
-		// 	{
-		// 		FLASH::setFlash('Les champs sont mal remplis!');
-		// 		$this->_view = new View('Register');
-		// 		$this->_view->generate(NULL);
-		// 	}
-		// }
-		// else
-		// {
-		// 	// FLASH::setFlash('Remplir tous les champs', 'warning');
-		// 	$this->_view = new View('Register');
-		// 	$this->_view->generate(NULL);
-		// }
 }

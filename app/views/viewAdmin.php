@@ -78,12 +78,12 @@ FLASH::flash();
 			<td><?= $getComment->content() ?>
 		    <td>
 		    	<button class="btn btn-info btn-sm">
-		    		<a style="color:white;" href="commentupdate&commentUpdate=<?= $getComment->id() ?>&post_id=<?=  /* le num de post_id est pas bon.*/ $getComment->id() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
+		    		<a style="color:white;" href="commentupdate&commentUpdate=<?= $getComment->id() ?>&post_id=<?=$getComment->chapo() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
 		    		Modifier
 		    		</a>
 		    	</button> | 
 		    	<button class="btn btn-warning btn-sm">
-		    		<a style="color:white;" href="commentdelete&commentDelete=<?= $getComment->id() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
+		    		<a style="color:white;" href="commentdelete&commentDelete=<?= $getComment->id() ?>&post_id=<?=$getComment->chapo() ?>&tokenCsrf=<?= $_SESSION['tokenCsrf'] ?>">
 		    		Supprimer
 		    		</a>
 		    	</button>

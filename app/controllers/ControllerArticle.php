@@ -26,7 +26,6 @@ class ControllerArticle extends ControllerMain
     	{
     		$this->addPost();
     	}
-    // exit();
     }
 
     public function addPost()
@@ -54,7 +53,7 @@ class ControllerArticle extends ControllerMain
 				$this->_postsManager->add($this->_post);
 	
 				FLASH::setFlash('Merci ' . $_SESSION['username'] . ', votre nouvel article a bien été envoyé.', 'success');
-				header('Refresh:0');
+				header('admin');
 				exit();
 			}	
 			FLASH::setFlash('Veuillez remplir tous les champs  correctement!');
@@ -114,7 +113,7 @@ class ControllerArticle extends ControllerMain
 				$this->_comment = new Comments
 					([
 						'author' => $_SESSION['username'],
-						'content' => $_POST['com_content'],
+						'content' => htmlspecialchars($_POST['com_content']),
 						'addDate' => new \DateTime()
 					]);
 
@@ -135,9 +134,18 @@ class ControllerArticle extends ControllerMain
 
     public function commentUpdate()
     {
+		$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
         if(isset($_GET['commentUpdate']))
 		{
-			$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
+			$onePost = $this->_postsManager->getUnique($post_id);
+
+			if($onePost->id() == 0)
+			{
+				FLASH::setFlash('L\'article demandé est inexistant!');
+				header('Location: articles');
+				exit();
+			}
+
 
 			$this->_security->securizationCsrf();
 
@@ -152,7 +160,7 @@ class ControllerArticle extends ControllerMain
 				$this->_comment = new Comments
 				([
 					'id' => (int) $_GET['commentUpdate'],
-					'content' => $_POST['com_content']
+					'content' => htmlspecialchars($_POST['com_content'])
 				]);
 
 				$this->_commentsManager->update($this->_comment);
@@ -161,37 +169,8 @@ class ControllerArticle extends ControllerMain
 				header('Refresh:0, url=article&post_id=' . $post_id);
 				exit();		
 			}
-
-
-
-$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
-		$onePost = $this->_postsManager->getUnique($post_id);
-
-		$updateComment = $this->_commentsManager->getUniqueComment($_GET['commentUpdate']);
-		$comments = $this->_commentsManager->getListComments($_GET['post_id']);
-		$getCommentById = $this->_commentsManager->getCommentByUserId();
-
-		$this->_view = new View('article');
-		$this->_view->generate(array('comments' => $comments, 'updateComment' => $updateComment, 'onePost' => $onePost, 'getCommentById' => $getCommentById));
-		exit();
-
-
-
-
-
-
-			$this->renderViewOneArticleAndComments();
-
-			$updateComment = $this->_commentsManager->getUniqueComment($_GET['commentUpdate']);
-
-			if($updateComment->id() === NULL)
-			{
-				header('Location: article&post_id=' . $post_id);
-				FLASH::setFlash('Le commentaire recherché est inexistant!');
-				exit();
-			}
-			$this->renderViewOneArticleAndComments();
-		}
+		$this->renderViewOneArticleAndComments();	
+		}	
     }
 
     public function commentDelete()
@@ -223,19 +202,15 @@ $post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
 
 	public function renderViewOneArticleAndComments()
 	{
-
-
-/////////Il faut appeler les variables comme elles apparaissent dans la view article, sinon pas d'affichage...//////////////
-
-
-
-
-
-
 		$post_id = isset($_GET['post_id']) ? htmlspecialchars($_GET['post_id']) : '';
 		$onePost = $this->_postsManager->getUnique($post_id);
 		$updateComment = $this->_commentsManager->getUniqueComment($_GET['commentUpdate']);
-var_dump($updateComment); die();
+		if($updateComment == NULL || $updateComment->id() == NULL)
+		{
+			header('Location: article&post_id=' . $post_id);
+			FLASH::setFlash('Le commentaire recherché est inexistant!');
+			exit();
+		}
 		$comments = $this->_commentsManager->getListComments($_GET['post_id']);
 		$getCommentById = $this->_commentsManager->getCommentByUserId();
 

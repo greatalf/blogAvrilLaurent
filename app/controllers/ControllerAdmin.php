@@ -73,7 +73,6 @@ class ControllerAdmin extends ControllerMain
 		$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
     	$allUsers = $this->_usersManager->getUsersList();
     	$postList = $this->_postsManager->getList(0,25);
-    	// var_dump($postList->id());
 
     	$validateComment = $this->_commentsManager->validateCommentList();
 		$usersCount = $this->_usersManager->count();
@@ -136,10 +135,10 @@ class ControllerAdmin extends ControllerMain
 				}				
 				$this->_post = new Posts
 				([
-					'author' => $_POST['post_author'],
-					'title' => $_POST['post_title'],
-					'chapo' => $_POST['post_chapo'],
-					'content' => $_POST['post_content']
+					'author' => htmlspecialchars($_POST['post_author']),
+					'title' => htmlspecialchars($_POST['post_title']),
+					'chapo' => htmlspecialchars($_POST['post_chapo']),
+					'content' => htmlspecialchars($_POST['post_content'])
 				]);
 
 				$this->_postsManager->update($this->_post);
@@ -155,7 +154,6 @@ class ControllerAdmin extends ControllerMain
 			exit();
 		}
 	}
-
 
 	public function commentValidate()
 	{
@@ -197,103 +195,13 @@ class ControllerAdmin extends ControllerMain
 		exit();
 	}
 
-
-
-	// public function validationComments()
-	// {
-	// 	$validateList = $this->_commentManager->validateCommentList();
-	// 	var_dump($validateList); die();
-	// 	// appeller les commentaires qui ont la valeur validation à 0.
-	// 	// Mettre à 1 si le boutton validation est clické, donc que validationComments est détéctée dans l'url.
-	// 	$this->renderViewAdmin();
-	// }
-
-	// public function admin()
-	// {
-	// 	if(isset($_SESSION['auth']))
-	// 	{
-	// 		$db = DBFactory::getConnexionPDO();
-	// 		require_once 'app/models/PostsManager.php';
-	// 		require_once 'app/models/UsersManager.php';
-
-
-	// 		$this->_usersManager = new UsersManager($db);
-	// 		$userInfos = $this->_usersManager->getUserInfos($_SESSION['id']);
-
-	// 		if($_SESSION['rank'] == 2)
-	// 		{
-	// 			$this->_postsManager = new PostsManager($db);
-	// 			$manager = $this->_postsManager->getList(0,25);
-
-	// 			$allUsers = $this->_usersManager->getUsersList();		
-
-	// 			//Effacement article
-	// 			if($_SESSION['rank'] == 2)
-	// 			{
-	// 				if(isset($_GET['post_delete']))
-	// 				{
-	// 					//HYDRATATION POUR DELETE
-	// 					$this->_post = new Posts
-	// 					([
-	// 						'id' => $_GET['post_delete']
-	// 					]);
-
-	// 					$this->_postsManager->delete($this->_post);
-	// 					//Affichage du message msg flash
-	// 					FLASH::setFlash('L\'article a bien été supprimé.', 'success');
-
-	// 					header('Refresh:0, url=admin');
-	// 					exit();
-	// 				}
-	// 			}
-
-	// 			//Effacement User
-	// 			if(isset($_GET['user_delete']))
-	// 				{
-	// 					//HYDRATATION POUR DELETE
-	// 					$this->_user = new Users
-	// 					([
-	// 						'id' => $_GET['user_delete']
-	// 					]);
-						
-	// 					$this->_usersManager->delete($this->_user);
-	// 					//Affichage du message msg flash
-	// 					FLASH::setFlash('L\'utilisateur a bien été bannit.', 'success');
-
-	// 					header('Location:admin');
-	// 					exit();
-	// 				}
-	// 		}
-
-
-			
-	// 		if($_SESSION['rank'] == 1)
-	// 		{
-	// 			$this->_postsManager = new PostsManager($db);
-	// 			$manager = $this->_postsManager->getMyList(0,10);
-
-	// 			$this->_view = new View('Admin');
-	// 			if($manager != NULL)
-	// 			{
-	// 				$this->_view->generate(array('manager' => $manager, 'userInfos' => $userInfos));	
-	// 			}
-	// 			else
-	// 			{
-	// 				$this->_view->generate(array('userInfos' => $userInfos));
-	// 			}
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		FLASH::setFlash('Vous n\'êtes pas autorisé à accéder à cette page');
-	// 		header('Location:connexion');
-	// 		exit();
-	// 	}
-
-	// 	if(!headers_sent())
-	// 	{
-	// 		$this->_view = new View('Admin');
-	// 		$this->_view->generate(array('manager' => $manager, 'userInfos' => $userInfos, 'allUsers' => $allUsers));
-	// 	}
-	// }
+	public function downgradeUser()
+	{
+		$this->_usersManager->downgradeUser(new Users([
+			'id' => htmlspecialchars($_GET['downgradeUser'])
+		]));
+		FLASH::setFlash('L\'utilisateur a bien été downgradé au rang de contributeur.', 'success');
+		header('Location: admin');
+		exit();
+	}
 }
